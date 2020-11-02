@@ -1,0 +1,320 @@
+Table: data_button
+----------------+--------------+------+-----+---------+---------
+ Field          | Type         | Null | Key | Default | Remarks 
+----------------+--------------+------+-----+---------+---------
+ id             | INT(10)      | NO   | PRI |         | ID      
+ data_object_id | INT(10)      | NO   |     |         | 元数据ID   
+ location       | INT(10)      | NO   |     |         | 按钮位置:1=头部,2=行内
+ type           | INT(10)      | NO   |     |         | 按钮类型:1=confirm,2=combobox
+ order_num      | INT(10)      | NO   |     | 0       | 按钮排序    
+ icon           | VARCHAR(255) | YES  |     |         | 按钮图标    
+ name           | VARCHAR(255) | NO   |     |         | 按钮名称    
+ color          | VARCHAR(255) | YES  |     |         | 按钮样式    
+ tip            | TEXT(65535)  | NO   |     |         | 按钮提示信息  
+ dialog_title   | VARCHAR(255) | YES  |     |         | dialog标题
+ dialog_width   | VARCHAR(255) | YES  |     | 600px   | dialog宽度
+ dialog_height  | VARCHAR(255) | YES  |     | 50%     | dialog高度
+ dialog_src     | VARCHAR(255) | YES  |     |         | dialog地址
+ action         | VARCHAR(255) | NO   |     |         | 按钮访问后端action
+ auth_role      | VARCHAR(255) | YES  |     |         | 角色标识权限集合
+ auth_row       | VARCHAR(255) | YES  |     |         | 行内权限    
+ is_show        | BIT          | NO   |     | 1       | 是否显示    
+----------------+--------------+------+-----+---------+---------
+
+Table: data_field
+-----------------+---------------+------+-----+---------+---------
+ Field           | Type          | Null | Key | Default | Remarks 
+-----------------+---------------+------+-----+---------+---------
+ id              | INT(10)       | NO   | PRI |         | ID      
+ data_object_id  | INT(10)       | NO   |     |         | object_id
+ order_num       | INT(10)       | NO   |     |         | 排序索引    
+ en              | VARCHAR(50)   | NO   |     |         | 英文名     
+ cn              | VARCHAR(50)   | NO   |     |         | 中文名     
+ is_auto         | BIT           | YES  |     | 0       | 主键是否自增长 
+ type            | VARCHAR(10)   | YES  |     | input   | 控件类型    
+ type_config     | VARCHAR(2000) | YES  |     |         | 控件配置    
+ align           | VARCHAR(10)   | YES  |     | center  | 排列      
+ is_query        | BIT           | YES  |     | 0       | 是否可查询   
+ is_show         | BIT           | YES  |     | 1       | 是否可显示   
+ is_disable      | BIT           | YES  |     | 0       | 是否禁用    
+ is_order        | BIT           | YES  |     | 1       | 是否可排序   
+ is_add          | BIT           | YES  |     | 1       | 是否可新增   
+ is_update       | BIT           | YES  |     | 1       | 是否可修改   
+ is_line_update  | BIT           | YES  |     | 1       | 是否可行内修改 
+ update_validate | VARCHAR(255)  | YES  |     |         | 是否可修改数据校验
+ is_edit         | BIT           | YES  |     | 1       | 是否可编辑   
+ is_required     | BIT           | YES  |     | 1       | 是否必填    
+ is_multiple     | BIT           | YES  |     | 0       | 是否多选项   
+ is_fictitious   | BIT           | YES  |     | 0       | 是否虚拟字段  
+ fictitious_sql  | VARCHAR(255)  | YES  |     |         | 虚拟字段来源sql
+ placeholder     | VARCHAR(255)  | YES  |     |         | 输入提示    
+ formatter       | TEXT(65535)   | YES  |     |         | 格式化     
+ validator       | TEXT(65535)   | YES  |     |         | UI校验表达式 
+ defaulter       | VARCHAR(255)  | YES  |     |         | 默认值表达式  
+ width           | INT(10)       | YES  |     |         | 控件宽度    
+ height          | INT(10)       | YES  |     | 20      | 控件高度    
+ config          | VARCHAR(2000) | YES  |     |         | 配置      
+ add_status      | INT(10)       | YES  |     | 0       | 状态：0=正常，10=只读，20=隐藏，50=禁用
+ update_status   | INT(10)       | YES  |     | 0       | 状态：0=正常，10=只读，20=隐藏，50=禁用
+ data_type       | INT(10)       | YES  |     | 12      | 数据类型    
+ data_type_name  | VARCHAR(20)   | YES  |     | VARCHAR | 数据类型名称  
+ data_size       | INT(10)       | YES  |     | 1       | 整数位长度   
+ data_decimal    | INT(10)       | YES  |     | 0       | 小数位长度   
+-----------------+---------------+------+-----+---------+---------
+
+Table: data_object
+----------------+--------------+------+-----+-------------------+---------
+ Field          | Type         | Null | Key | Default           | Remarks 
+----------------+--------------+------+-----+-------------------+---------
+ id             | INT(10)      | NO   | PRI |                   | ID      
+ table_name     | VARCHAR(255) | NO   |     |                   | 表名      
+ en             | VARCHAR(255) | NO   |     |                   | 英文编码    
+ cn             | VARCHAR(255) | NO   |     |                   | 中文名     
+ where_attr     | VARCHAR(255) | YES  |     |                   | 查询表达式   
+ interceptor    | VARCHAR(255) | YES  |     |                   | 拦截器     
+ is_add         | BIT          | NO   |     | 1                 | 是否新增    
+ is_update      | BIT          | NO   |     | 1                 | 是否修改    
+ is_line_update | BIT          | NO   |     | 1                 | 是否可行内修改 
+ is_delete      | BIT          | NO   |     | 1                 | 是否删除    
+ is_handle      | BIT          | NO   |     | 1                 | 是否拥有操作列 
+ handle_width   | VARCHAR(255) | YES  |     | 100               | 操作列宽度   
+ create_time    | DATETIME(19) | NO   |     | CURRENT_TIMESTAMP | 创建时间    
+----------------+--------------+------+-----+-------------------+---------
+
+Table: data_task
+-------+--------------+------+-----+---------+---------
+ Field | Type         | Null | Key | Default | Remarks 
+-------+--------------+------+-----+---------+---------
+ id    | INT(10)      | NO   | PRI |         |         
+ state | INT(10)      | NO   |     | 0       | 状态:0=停止,1=启动
+ name  | VARCHAR(255) | NO   |     |         | 名称      
+ exp   | VARCHAR(50)  | NO   |     |         | 表达式     
+ clazz | VARCHAR(255) | NO   |     |         | 实现类     
+ info  | VARCHAR(255) | YES  |     |         | 说明      
+-------+--------------+------+-----+---------+---------
+
+Table: dicts
+--------+--------------+------+-----+---------+---------
+ Field  | Type         | Null | Key | Default | Remarks 
+--------+--------------+------+-----+---------+---------
+ id     | INT(10)      | NO   | PRI |         |         
+ value  | INT(10)      | NO   |     |         | 字典值     
+ name   | VARCHAR(50)  | NO   |     |         | 字典中文    
+ object | VARCHAR(50)  | NO   |     |         | 表名      
+ field  | VARCHAR(50)  | NO   |     |         | 字段名     
+ ext    | VARCHAR(255) | YES  |     |         | 扩展Json  
+--------+--------------+------+-----+---------+---------
+
+Table: file
+-------------+--------------+------+-----+-------------------+---------
+ Field       | Type         | Null | Key | Default           | Remarks 
+-------------+--------------+------+-----+-------------------+---------
+ id          | INT(10)      | NO   | PRI |                   | ID      
+ name        | VARCHAR(255) | NO   |     |                   | 文件名     
+ url         | TEXT(65535)  | NO   |     |                   | 文件路径    
+ create_time | DATETIME(19) | NO   |     | CURRENT_TIMESTAMP | 创建时间    
+-------------+--------------+------+-----+-------------------+---------
+
+Table: menu
+--------------------+--------------+------+-----+---------+---------
+ Field              | Type         | Null | Key | Default | Remarks 
+--------------------+--------------+------+-----+---------+---------
+ id                 | INT(10)      | NO   | PRI |         | ID      
+ menu_level         | INT(10)      | NO   |     |         | 菜单层级    
+ parent_menu        | INT(10)      | NO   |     |         | 父级菜单    
+ title_en           | VARCHAR(255) | NO   |     |         | 菜单英文    
+ title              | VARCHAR(255) | NO   |     |         | 菜单名称    
+ seq_num            | INT(10)      | NO   |     |         | 菜单序号    
+ icon               | VARCHAR(255) | YES  |     |         | 菜单图标    
+ type               | INT(10)      | NO   |     |         | 菜单类型:1=单表,2=主子表,3=自定义
+ data_object_id     | INT(10)      | YES  |     | 0       | 数据模型    
+ son_data_object_id | INT(10)      | YES  |     | 0       | 子表数据模型  
+ parent_id_field    | VARCHAR(255) | YES  |     |         | 主表ID    
+ son_id_field       | VARCHAR(255) | YES  |     |         | 子表关联ID  
+ href               | VARCHAR(255) | YES  |     |         | 菜单链接    
+ is_hide            | INT(10)      | NO   |     |         | 是否隐藏：1隐藏，0显示
+--------------------+--------------+------+-----+---------+---------
+
+Table: permissions
+-----------------+--------------+------+-----+---------+---------
+ Field           | Type         | Null | Key | Default | Remarks 
+-----------------+--------------+------+-----+---------+---------
+ id              | INT(10)      | NO   | PRI |         | ID      
+ name            | VARCHAR(255) | YES  |     |         | 权限名称    
+ permission_name | VARCHAR(255) | YES  |     |         | 权限表达式   
+ type            | INT(10)      | NO   |     |         | 权限类型：1菜单，2按钮，3数据
+ gl_id           | INT(10)      | YES  |     |         | 关联菜单ID  
+-----------------+--------------+------+-----+---------+---------
+
+Table: rational_proposal
+---------------------------+----------------------+------+-----+---------+---------
+ Field                     | Type                 | Null | Key | Default | Remarks 
+---------------------------+----------------------+------+-----+---------+---------
+ id                        | INT(10)              | NO   | PRI |         |         
+ create_time               | DATE(10)             | YES  |     |         | 创建时间    
+ rp_no                     | VARCHAR(128)         | YES  |     |         | 编号      
+ release_date              | DATE(10)             | YES  |     |         | 发布日期    
+ find_userid               | VARCHAR(128)         | YES  |     |         | 问题第一发现人员工ID
+ find_username             | VARCHAR(128)         | YES  |     |         | 问题第一发现人姓名
+ find_user_part_id         | VARCHAR(128)         | YES  |     |         | 问题第一发现人部门ID
+ find_user_part_name       | VARCHAR(128)         | YES  |     |         | 问题第一发现人部门名称
+ department                | VARCHAR(128)         | YES  |     |         | 问题所在事业部 
+ workshop                  | VARCHAR(128)         | YES  |     |         | 问题所在车间  
+ prodcutionLine            | VARCHAR(128)         | YES  |     |         | 问题所在产线  
+ proposal                  | MEDIUMTEXT(16777215) | YES  |     |         | 改善建议    
+ description               | MEDIUMTEXT(16777215) | YES  |     |         | 问题描述    
+ picture_of_problem        | VARCHAR(2000)        | YES  |     |         | 问题图片    
+ improve_type              | VARCHAR(128)         | YES  |     |         | 改善类型    
+ is_checked                | INT(10)              | YES  |     |         | 是否已审核，0=未审核，1=已审核
+ auditor_userid            | VARCHAR(128)         | YES  |     |         | 审核人ID   
+ auditor_username          | VARCHAR(128)         | YES  |     |         | 审核人姓名   
+ approve_date              | DATE(10)             | YES  |     |         | 审核日期    
+ audit_result              | INT(10)              | YES  |     |         | 审核结果，0=拒绝，1=同意
+ audit_opinion             | VARCHAR(255)         | YES  |     |         | 审核意见    
+ scores                    | INT(10)              | YES  |     |         | 分值      
+ commit_finish_date        | DATE(10)             | YES  |     |         | 预计完成时间  
+ description_after_improve | TEXT(65535)          | YES  |     |         | 问题完成情况描述
+ handler_username          | VARCHAR(128)         | YES  |     |         | 处理人姓名   
+ handler_userid            | VARCHAR(128)         | YES  |     |         | 处理人ID   
+ actural_finish_date       | DATE(10)             | YES  |     |         | 实际完成时间  
+ handle_result             | INT(10)              | YES  |     | 0       | 处理结果：0=未处理，1=已处理, 默认为0
+ handle_date               | DATE(10)             | YES  |     |         | 处理完成日期（填表日期）
+ picture_after_improve     | VARCHAR(2000)        | YES  |     |         | 整改后照片   
+ comment                   | VARCHAR(255)         | YES  |     |         | 备注      
+---------------------------+----------------------+------+-----+---------+---------
+
+Table: role_permission
+---------------+---------+------+-----+---------+---------
+ Field         | Type    | Null | Key | Default | Remarks 
+---------------+---------+------+-----+---------+---------
+ id            | INT(10) | NO   | PRI |         | ID      
+ role_id       | INT(10) | NO   |     |         | 角色ID    
+ permission_id | INT(10) | NO   |     |         | 权限ID    
+---------------+---------+------+-----+---------+---------
+
+Table: roles
+----------------+--------------+------+-----+---------+---------
+ Field          | Type         | Null | Key | Default | Remarks 
+----------------+--------------+------+-----+---------+---------
+ id             | INT(10)      | NO   | PRI |         | ID      
+ role_name      | VARCHAR(255) | NO   |     |         | 角色      
+ role_nick_name | VARCHAR(255) | YES  |     |         | 角色名称    
+ role_desc      | VARCHAR(255) | YES  |     |         | 具体描述    
+----------------+--------------+------+-----+---------+---------
+
+Table: rp_improve_type
+-------+--------------+------+-----+---------+---------
+ Field | Type         | Null | Key | Default | Remarks 
+-------+--------------+------+-----+---------+---------
+ id    | INT(10)      | NO   | PRI |         |         
+ type  | VARCHAR(128) | YES  |     |         |         
+-------+--------------+------+-----+---------+---------
+
+Table: rp_line_structure
+----------------+--------------+------+-----+---------+---------
+ Field          | Type         | Null | Key | Default | Remarks 
+----------------+--------------+------+-----+---------+---------
+ id             | INT(10)      | NO   | PRI |         | 序号      
+ productionLine | VARCHAR(100) | YES  |     |         | 产线名称    
+ pid            | INT(10)      | YES  |     |         | 上级id    
+ leader_name    | VARCHAR(20)  | YES  |     |         | 负责人姓名   
+ leader_id      | VARCHAR(20)  | YES  |     |         | 负责人工号   
+----------------+--------------+------+-----+---------+---------
+
+Table: rp_prize_exchange_list
+----------------+--------------+------+-----+---------+---------
+ Field          | Type         | Null | Key | Default | Remarks 
+----------------+--------------+------+-----+---------+---------
+ id             | INT(10)      | NO   | PRI |         | 序号      
+ apply_userid   | VARCHAR(128) | YES  |     |         | 申请人id   
+ apply_username | VARCHAR(128) | YES  |     |         | 申请人姓名   
+ apply_date     | DATE(10)     | YES  |     |         | 申请日期    
+ score          | INT(10)      | YES  |     |         | 所需积分    
+ prize_name     | VARCHAR(128) | YES  |     |         | 奖品名称    
+ prizeid        | INT(10)      | YES  |     |         | 奖品id    
+----------------+--------------+------+-----+---------+---------
+
+Table: rp_prize_list
+----------------+--------------+------+-----+---------+---------
+ Field          | Type         | Null | Key | Default | Remarks 
+----------------+--------------+------+-----+---------+---------
+ id             | INT(10)      | NO   | PRI |         | 序号      
+ prize_pic_name | VARCHAR(120) | YES  |     |         | 奖品图片名称  
+ cost_score     | INT(10)      | YES  |     |         | 奖品所需积分  
+ prize_name_cn  | VARCHAR(120) | YES  |     |         | 奖品名称    
+----------------+--------------+------+-----+---------+---------
+
+Table: rp_shift_leader
+---------------------+--------------+------+-----+---------+---------
+ Field               | Type         | Null | Key | Default | Remarks 
+---------------------+--------------+------+-----+---------+---------
+ id                  | INT(10)      | NO   | PRI |         | 序号      
+ shift_leader        | VARCHAR(128) | YES  |     |         | 班长姓名    
+ shift_leader_job_no | VARCHAR(128) | YES  |     |         | 班长工号    
+ pid                 | INT(10)      | YES  |     |         | 领导的序号   
+ workshop            | VARCHAR(128) | YES  |     |         | 车间      
+ department          | VARCHAR(128) | YES  |     |         | 部门      
+---------------------+--------------+------+-----+---------+---------
+
+Table: serial_number
+--------------------+---------+------+-----+---------+---------
+ Field              | Type    | Null | Key | Default | Remarks 
+--------------------+---------+------+-----+---------+---------
+ id                 | INT(10) | NO   | PRI |         | ID      
+ part_invoice_no    | INT(10) | NO   |     | 1       | 收货单号    
+ part_check_no      | INT(10) | NO   |     | 1       | 检验单号    
+ ingredient_plan_no | INT(10) | NO   |     | 1       | 配料单号    
+ cust_order_no      | INT(10) | NO   |     | 1       | 客户订单号   
+--------------------+---------+------+-----+---------+---------
+
+Table: user
+--------------+--------------+------+-----+-------------------+---------
+ Field        | Type         | Null | Key | Default           | Remarks 
+--------------+--------------+------+-----+-------------------+---------
+ id           | INT(10)      | NO   | PRI |                   | ID      
+ username     | VARCHAR(255) | NO   |     |                   | 登录账号    
+ password     | VARCHAR(255) | NO   |     |                   | 登录密码    
+ nickname     | VARCHAR(255) | NO   |     |                   | 用户姓名    
+ ding_user_id | VARCHAR(255) | NO   |     |                   | 钉钉USERID
+ update_time  | DATETIME(19) | NO   |     | CURRENT_TIMESTAMP | 修改时间    
+ create_time  | DATETIME(19) | NO   |     | CURRENT_TIMESTAMP | 创建时间    
+--------------+--------------+------+-----+-------------------+---------
+
+Table: user_role
+---------+---------+------+-----+---------+---------
+ Field   | Type    | Null | Key | Default | Remarks 
+---------+---------+------+-----+---------+---------
+ id      | INT(10) | NO   | PRI |         | ID      
+ user_id | INT(10) | NO   |     |         | 用户ID    
+ role_id | INT(10) | NO   |     |         | 角色ID    
+---------+---------+------+-----+---------+---------
+
+Table: yw_test
+------------------+---------------+------+-----+-------------------+---------
+ Field            | Type          | Null | Key | Default           | Remarks 
+------------------+---------------+------+-----+-------------------+---------
+ id               | INT(10)       | NO   | PRI |                   | ID      
+ workshop         | INT(10)       | NO   |     |                   | 车间      
+ no               | VARCHAR(255)  | NO   |     |                   | 产线编号    
+ name             | VARCHAR(255)  | NO   |     |                   | 产线名称    
+ is_show          | BIT           | NO   |     | 1                 | 是否显示    
+ file_url         | VARCHAR(1000) | YES  |     |                   | 文件      
+ statu            | INT(10)       | NO   |     | 0                 | 状态      
+ test_statu       | INT(10)       | YES  |     | 0                 | 测试字典:1=哈哈,2=嘿嘿
+ create_user_id   | VARCHAR(255)  | NO   |     |                   | 创建者ID   
+ create_user_name | VARCHAR(255)  | NO   |     |                   | 创建者姓名   
+ create_date      | DATE(10)      | YES  |     |                   |         
+ create_time      | DATETIME(19)  | NO   |     | CURRENT_TIMESTAMP | 创建时间    
+ update_time      | DATETIME(19)  | NO   |     | CURRENT_TIMESTAMP |         
+------------------+---------------+------+-----+-------------------+---------
+
+Table: yw_test_son
+------------+--------------+------+-----+---------+---------
+ Field      | Type         | Null | Key | Default | Remarks 
+------------+--------------+------+-----+---------+---------
+ id         | INT(10)      | NO   | PRI |         | ID      
+ yw_test_id | INT(10)      | NO   |     |         | 产线ID    
+ no         | VARCHAR(255) | YES  |     |         | 工序号     
+ name       | VARCHAR(255) | YES  |     |         | 工序名称    
+------------+--------------+------+-----+---------+---------
+
