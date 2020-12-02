@@ -64,7 +64,7 @@ public abstract class BaseRationalProposal<M extends BaseRationalProposal<M>> ex
 	}
 
 	/**
-	 * 问题第一发现人员工ID
+	 * 发起人员工ID
 	 */
 	public M setFindUserid(java.lang.String findUserid) {
 		set("find_userid", findUserid);
@@ -72,14 +72,14 @@ public abstract class BaseRationalProposal<M extends BaseRationalProposal<M>> ex
 	}
 	
 	/**
-	 * 问题第一发现人员工ID
+	 * 发起人员工ID
 	 */
 	public java.lang.String getFindUserid() {
 		return getStr("find_userid");
 	}
 
 	/**
-	 * 问题第一发现人姓名
+	 * 发起人姓名
 	 */
 	public M setFindUsername(java.lang.String findUsername) {
 		set("find_username", findUsername);
@@ -87,14 +87,14 @@ public abstract class BaseRationalProposal<M extends BaseRationalProposal<M>> ex
 	}
 	
 	/**
-	 * 问题第一发现人姓名
+	 * 发起人姓名
 	 */
 	public java.lang.String getFindUsername() {
 		return getStr("find_username");
 	}
 
 	/**
-	 * 问题第一发现人部门ID
+	 * 发起人部门ID
 	 */
 	public M setFindUserPartId(java.lang.String findUserPartId) {
 		set("find_user_part_id", findUserPartId);
@@ -102,14 +102,14 @@ public abstract class BaseRationalProposal<M extends BaseRationalProposal<M>> ex
 	}
 	
 	/**
-	 * 问题第一发现人部门ID
+	 * 发起人部门ID
 	 */
 	public java.lang.String getFindUserPartId() {
 		return getStr("find_user_part_id");
 	}
 
 	/**
-	 * 问题第一发现人部门名称
+	 * 发起人部门名称
 	 */
 	public M setFindUserPartName(java.lang.String findUserPartName) {
 		set("find_user_part_name", findUserPartName);
@@ -117,7 +117,7 @@ public abstract class BaseRationalProposal<M extends BaseRationalProposal<M>> ex
 	}
 	
 	/**
-	 * 问题第一发现人部门名称
+	 * 发起人部门名称
 	 */
 	public java.lang.String getFindUserPartName() {
 		return getStr("find_user_part_name");
@@ -319,7 +319,7 @@ public abstract class BaseRationalProposal<M extends BaseRationalProposal<M>> ex
 	}
 
 	/**
-	 * 分值
+	 * 基础分
 	 */
 	public M setScores(java.lang.Integer scores) {
 		set("scores", scores);
@@ -327,10 +327,25 @@ public abstract class BaseRationalProposal<M extends BaseRationalProposal<M>> ex
 	}
 	
 	/**
-	 * 分值
+	 * 基础分
 	 */
 	public java.lang.Integer getScores() {
 		return getInt("scores");
+	}
+
+	/**
+	 * 附加分
+	 */
+	public M setAddScore(java.lang.Integer addScore) {
+		set("addScore", addScore);
+		return (M)this;
+	}
+	
+	/**
+	 * 附加分
+	 */
+	public java.lang.Integer getAddScore() {
+		return getInt("addScore");
 	}
 
 	/**
@@ -466,6 +481,81 @@ public abstract class BaseRationalProposal<M extends BaseRationalProposal<M>> ex
 	 */
 	public java.lang.String getComment() {
 		return getStr("comment");
+	}
+
+	/**
+	 * 班长是否推荐为优秀建议：0否，1是
+	 */
+	public M setIsExcellent(java.lang.Integer isExcellent) {
+		set("is_excellent", isExcellent);
+		return (M)this;
+	}
+	
+	/**
+	 * 班长是否推荐为优秀建议：0否，1是
+	 */
+	public java.lang.Integer getIsExcellent() {
+		return getInt("is_excellent");
+	}
+
+	/**
+	 * 班长是否推荐困难问题：0否，1是
+	 */
+	public M setIsDifficult(java.lang.Integer isDifficult) {
+		set("is_difficult", isDifficult);
+		return (M)this;
+	}
+	
+	/**
+	 * 班长是否推荐困难问题：0否，1是
+	 */
+	public java.lang.Integer getIsDifficult() {
+		return getInt("is_difficult");
+	}
+
+	/**
+	 * 审核后是否同意为优秀建议：0否，1是
+	 */
+	public M setIsExcellentAftCk(java.lang.Integer isExcellentAftCk) {
+		set("is_excellent_aft_ck", isExcellentAftCk);
+		return (M)this;
+	}
+	
+	/**
+	 * 审核后是否同意为优秀建议：0否，1是
+	 */
+	public java.lang.Integer getIsExcellentAftCk() {
+		return getInt("is_excellent_aft_ck");
+	}
+
+	/**
+	 * 审核后是否同意为困难建议：0否，1是
+	 */
+	public M setIsDifficultAftCk(java.lang.Integer isDifficultAftCk) {
+		set("is_difficult_aft_ck", isDifficultAftCk);
+		return (M)this;
+	}
+	
+	/**
+	 * 审核后是否同意为困难建议：0否，1是
+	 */
+	public java.lang.Integer getIsDifficultAftCk() {
+		return getInt("is_difficult_aft_ck");
+	}
+
+	/**
+	 * 同意优秀或困难意见描述(精益专员)
+	 */
+	public M setDescAftDbAudit(java.lang.String descAftDbAudit) {
+		set("desc_aft_db_audit", descAftDbAudit);
+		return (M)this;
+	}
+	
+	/**
+	 * 同意优秀或困难意见描述(精益专员)
+	 */
+	public java.lang.String getDescAftDbAudit() {
+		return getStr("desc_aft_db_audit");
 	}
 
 }

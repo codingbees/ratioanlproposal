@@ -58,12 +58,12 @@ public class AppController extends Controller {
         //3.查询得到当前用户的userId
         // 获得到userId之后应用应该处理应用自身的登录会话管理（session）,避免后续的业务交互（前端到应用服务端）每次都要重新获取用户身份，提升用户体验
         String userId = response.getUserid();
-        System.out.println("userId is :");
-        System.out.println(userId);
+//        System.out.println("userId is :");
+//        System.out.println(userId);
         
         OapiUserGetResponse userinfo = getUserInfo(accessToken, userId);
-        System.out.println("userinfo is:");
-        System.out.println(userinfo);
+//        System.out.println("userinfo is:");
+//        System.out.println(userinfo);
         //获取用户部门名称
         String departs = "";
         for (int i = 0; i < userinfo.getDepartment().size(); i++) {
@@ -75,8 +75,8 @@ public class AppController extends Controller {
             departs += response1.getName()+",";
 		}
         departs = departs.substring(0, departs.length()-1);
-        System.out.println("departments--------------------------------------------");
-        System.out.println(departs);
+//        System.out.println("departments--------------------------------------------");
+//        System.out.println(departs);
         /*Map<String, Object> map = FastJson.getJson().parse(userinfo.getBody(), Map.class);
         Record user = new Record().setColumns(map);*/
         //返回结果
@@ -85,8 +85,8 @@ public class AppController extends Controller {
         jb.put("departments", departs);
         resultMap.put("userinfo", jb.toString());
         ServiceResult serviceResult = ServiceResult.success(resultMap);
-        System.out.println("serviceResult is:");
-        System.out.println(serviceResult.toString());
+//        System.out.println("serviceResult is:");
+//        System.out.println(serviceResult.toString());
         renderJson(serviceResult);
     }
     
@@ -242,7 +242,7 @@ public class AppController extends Controller {
     		qp.setCreateTime(new Date());
 			qp.setRpNo("FLPMRP"+SerialNumberUtil.generator("part_check_no"));
 			String name = qp.get("find_username");
-			System.out.println(name);
+//			System.out.println(name);
 			qp.save();
 			resp.set("code", 200);
 			resp.set("msg", "发起问题成功！");
@@ -255,39 +255,50 @@ public class AppController extends Controller {
     }
     //上传图片
     public void uploadFile(){
-//		String picName = UUID.randomUUID().toString();
-//		System.out.println("Random picName is:"+picName);
-//    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
-//    	String d = sdf.format(new Date());
-//    	System.out.println(d);
-//    	
-//    	UploadFile file = getFile("file","problem_pics");
-//    	System.out.println("file is:");
-//    	System.out.println(file.getUploadPath());
-//    	System.out.println(file.getFile());
-//    	
-//    	boolean s = file.getFile().renameTo(new File("D:\\rational_proposal\\temp\\problem_pics\\"+picName+".jpg"));
-//    	boolean s = file.getFile().renameTo(new File("D:\\rational_proposal\\temp\\problem_pics\\test1.jpg"));
-//		System.out.println("rename is:"+s);
-//		
-//    	String fileName = ""+d+"_problem_pics/"+picName+".jpg;";
-//		Record rsp = new Record();
-//		rsp.set("fileName", fileName);
-//    	renderJson(rsp);
+
     	String picName = UUID.randomUUID().toString();
     	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
     	String d = sdf.format(new Date());
-    	System.out.println(d);
+//    	System.out.println(d);
     	UploadFile file = getFile("file","rationalproposal");
     	Record rsp = new Record();
 		file.getFile().renameTo(new File("D:\\apache-tomcat-8.0.26\\webapps\\rationalproposal\\"+picName+".jpg"));
 		String fileName = ""+d+"_check_"+picName+".jpg;";
 		rsp.set("fileName", fileName);
+		rsp.set("picName", picName+".jpg;");
     	renderJson(rsp);
     }
     public void getAuditor() {
-    	String selectws = getPara("selectws");
     	Record	resp = new Record();
+    	String userid = getPara("userid");
+    	
+    	if("".equals(userid) || userid==null) {
+    		return;
+    	}
+    	//如果发起人是班长，返回指定的审核人何雯
+    	if(userid!=null) {
+    		List<RpShiftLeader> auditorForLeader = RpShiftLeader.dao.find("select * from rp_shift_leader");
+    		String[] arrayAuditorNo1 = new String[auditorForLeader.size()];
+        	for (int i = 0; i < auditorForLeader.size(); i++) {
+        		arrayAuditorNo1[i] = auditorForLeader.get(i).getShiftLeaderJobNo();
+        		if(arrayAuditorNo1[i].equals(userid)) {
+//        			System.out.println("在班长列表中，userid is "+userid);
+        			String[] name =  {"何雯"};
+        			String[] jobnumber =  {"FL00026763"};
+        			resp.set("arrayAuditor", name);
+                	resp.set("arrayAuditorJobNo", jobnumber);
+                	resp.set("code",200);
+                	renderJson(resp);
+        			return ;
+        		}
+        	}
+    	}
+    	
+    	
+    	
+    	
+    	String selectws = getPara("selectws");
+//    	System.out.println("selectws is "+selectws);
     	if("".equals(selectws) || selectws==null) {
     		List<RpShiftLeader> auditor = RpShiftLeader.dao.find("select * from rp_shift_leader where pid = 11");
     		String[] arrayAuditor = new String[auditor.size()];
@@ -295,25 +306,43 @@ public class AppController extends Controller {
         	for (int i = 0; i < auditor.size(); i++) {
         		arrayAuditor[i] = auditor.get(i).getShiftLeader();
         		arrayAuditorNo[i] = auditor.get(i).getShiftLeaderJobNo();
+//        		System.out.println(arrayAuditorNo[i]);
+        		if(arrayAuditorNo[i].equals(userid)) {
+//        			System.out.println("在班长列表中，userid is "+userid);
+        			resp.set("arrayAuditor", "何雯");
+                	resp.set("arrayAuditorJobNo", "FL00026763");
+                	resp.set("code",200);
+                	renderJson(resp);
+        			return ;
+        		}
         	}
         	resp.set("arrayAuditor", arrayAuditor);
         	resp.set("arrayAuditorJobNo", arrayAuditorNo);
         	resp.set("code",200);
         	renderJson(resp);
-        	System.out.println(resp);
         	return;
     	}
+    	
     	List<RpShiftLeader> auditor =RpShiftLeader.dao.find("select * from rp_shift_leader where pid = (select id from rp_line_structure where productionLine='"+selectws+"'");
     	String[] arrayAuditor = new String[auditor.size()];
 		String[] arrayAuditorNo = new String[auditor.size()];
     	for (int i = 0; i < auditor.size(); i++) {
     		arrayAuditor[i] = auditor.get(i).getShiftLeader();
     		arrayAuditorNo[i] = auditor.get(i).getShiftLeaderJobNo();
+    		System.out.println(arrayAuditorNo[i]);
+    		if(arrayAuditorNo[i].equals(userid)) {
+    			System.out.println("在班长列表中，userid is "+userid);
+    			resp.set("arrayAuditor", "何雯");
+            	resp.set("arrayAuditorJobNo", "FL00026763");
+            	resp.set("code",200);
+            	renderJson(resp);
+    			return ;
+    		}
     	}
     	resp.set("arrayAuditor", arrayAuditor);
     	resp.set("arrayAuditorJobNo", arrayAuditorNo);
     	resp.set("code",200);
-    	System.out.println(resp);
+//    	System.out.println(resp);
     	renderJson(resp);
     }
 	

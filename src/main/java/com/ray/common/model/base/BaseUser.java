@@ -114,4 +114,34 @@ public abstract class BaseUser<M extends BaseUser<M>> extends Model<M> implement
 		return get("create_time");
 	}
 
+	/**
+	 * 权限：0无，1钉钉后台，2优秀建议审核权
+	 */
+	public M setRights(java.lang.String rights) {
+		set("rights", rights);
+		return (M)this;
+	}
+	
+	/**
+	 * 权限：0无，1钉钉后台，2优秀建议审核权
+	 */
+	public java.lang.String getRights() {
+		return getStr("rights");
+	}
+
+	/**
+	 * 工号
+	 */
+	public M setJobNumber(java.lang.String jobNumber) {
+		set("job_number", jobNumber);
+		return (M)this;
+	}
+	
+	/**
+	 * 工号
+	 */
+	public java.lang.String getJobNumber() {
+		return getStr("job_number");
+	}
+
 }

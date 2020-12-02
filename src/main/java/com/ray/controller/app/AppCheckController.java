@@ -14,6 +14,7 @@ import com.jfinal.template.stat.ast.ForIteratorStatus;
 import com.jfinal.upload.UploadFile;
 import com.ray.common.model.RationalProposal;
 import com.ray.common.model.RpImproveType;
+import com.ray.common.model.RpLike;
 import com.ray.common.model.RpPrizeExchangeList;
 import com.ray.common.model.RpPrizeList;
 import com.ray.common.model.RpShiftLeader;
@@ -22,11 +23,11 @@ import com.ray.util.SerialNumberUtil;
 public class AppCheckController extends Controller {
 	public void getCheckList() {
 		String auditor_userid = getPara("userid");
-		List<RationalProposal> toBeChecked = RationalProposal.dao
-				.find("select * from rational_proposal WHERE is_checked = 0 and auditor_userid ='"+auditor_userid+"'");
+		List<RationalProposal> toBeChecked = RationalProposal.dao.find(
+				"select * from rational_proposal WHERE is_checked = 0 and auditor_userid ='" + auditor_userid + "'");
 		Record resp = new Record();
 		resp.set("arraytoBeChecked", toBeChecked);
-		System.out.println(toBeChecked);
+//		System.out.println(toBeChecked);
 		resp.set("code", 200);
 		renderJson(resp);
 	}
@@ -38,8 +39,8 @@ public class AppCheckController extends Controller {
 		Record resp = new Record();
 		try {
 			String s = Item.get(0).get("picture_of_problem");
-			String[]  str_pic = null;
-			if(s!=null) {
+			String[] str_pic = null;
+			if (s != null) {
 				String[] str = s.split(";");
 				str_pic = new String[str.length];
 				for (int i = 0; i < str.length; i++) {
@@ -47,8 +48,8 @@ public class AppCheckController extends Controller {
 					System.out.println(str_pic[i]);
 				}
 			}
-			//System.out.println("picture_of_problem is");
-			//System.out.println(s);
+			// System.out.println("picture_of_problem is");
+			// System.out.println(s);
 			resp.set("img", str_pic);
 		} catch (Exception e) {
 			resp.set("code", 0);
@@ -75,8 +76,8 @@ public class AppCheckController extends Controller {
 		}
 		resp.set("handlers", arrayShiftLeader);
 		resp.set("handlersid", arrayShiftLeaderid);
-		System.out.println("getHandlers works!");
-		System.out.println(arrayShiftLeader);
+//		System.out.println("getHandlers works!");
+//		System.out.println(arrayShiftLeader);
 		resp.set("code", 200);
 		renderJson(resp);
 
@@ -87,24 +88,28 @@ public class AppCheckController extends Controller {
 		Record resp = new Record();
 		try {
 			RationalProposal qp = getModel(RationalProposal.class, "");
-			System.out.println("qp is");
-			System.out.println(qp);
-			
+//			System.out.println("qp is");
+//			System.out.println(qp);
+			Integer is_excellent = qp.getIsExcellent();
+			Integer is_difficult = qp.getIsDifficult();
 			String handler_userid = qp.getHandlerUserid();
 			String rp_no = qp.getRpNo();
 			String audit_opinion = qp.getAuditOpinion();
 			String handler_username = qp.getHandlerUsername();
 			Integer scores = qp.getScores();
 			String commit_finish_date = qp.getCommitFinishDate().toString();
-
+			Integer addScore = qp.getAddScore();
+			
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			String date = sdf.format(new Date());
 
-			Db.update("update rational_proposal set audit_opinion='" + audit_opinion + "',handler_userid='" + handler_userid + "',handler_username='"
-					+ handler_username + "',scores=" + scores + ",commit_finish_date='" + commit_finish_date
-					+ "' WHERE rp_no ='" + rp_no + "' ;");
-			Db.update("update rational_proposal set is_checked=1,audit_result=1,approve_date='" + date + "' WHERE rp_no ='"
-					+ rp_no + "'");
+			Db.update("update rational_proposal set audit_opinion='" + audit_opinion + "',handler_userid='"
+					+ handler_userid + "',handler_username='" + handler_username + "',scores=" + scores
+					+ ", addScore=" + addScore+ " ,commit_finish_date='" + commit_finish_date + "',is_excellent=" + is_excellent + ",is_difficult="
+					+ is_difficult + "  WHERE rp_no ='" + rp_no + "' ;");
+
+			Db.update("update rational_proposal set is_checked=1,audit_result=1,approve_date='" + date
+					+ "' WHERE rp_no ='" + rp_no + "'");
 
 			resp.set("code", 200);
 			resp.set("msg", "数据提交成功");
@@ -122,8 +127,8 @@ public class AppCheckController extends Controller {
 		Record resp = new Record();
 		try {
 			RationalProposal qp = getModel(RationalProposal.class, "");
-			System.out.println("qp is");
-			System.out.println(qp);
+//			System.out.println("qp is");
+//			System.out.println(qp);
 			String no = qp.getRpNo();
 			String audit_opinion = qp.getAuditOpinion();
 
@@ -131,8 +136,8 @@ public class AppCheckController extends Controller {
 			String date = sdf.format(new Date());
 
 			Db.update("update rational_proposal set audit_opinion='" + audit_opinion + "' WHERE rp_no ='" + no + "' ;");
-			Db.update("update rational_proposal set is_checked=1,audit_result=0,approve_date='" + date + "' WHERE rp_no ='"
-					+ no + "'");
+			Db.update("update rational_proposal set is_checked=1,audit_result=0,approve_date='" + date
+					+ "' WHERE rp_no ='" + no + "'");
 
 			resp.set("code", 200);
 			resp.set("msg", "请求成功！");
@@ -147,11 +152,12 @@ public class AppCheckController extends Controller {
 
 	public void getHandleList() {
 		String handler_userid = getPara("handler_userid");
-		List<RationalProposal> toBeChecked = RationalProposal.dao
-				.find("select * from rational_proposal WHERE is_checked = 1 AND audit_result =1 AND handle_result!=1 and handler_userid='"+handler_userid+"'");
+		List<RationalProposal> toBeChecked = RationalProposal.dao.find(
+				"select * from rational_proposal WHERE is_checked = 1 AND audit_result =1 AND handle_result!=1 and handler_userid='"
+						+ handler_userid + "'");
 		Record resp = new Record();
 		resp.set("arraytoBeChecked", toBeChecked);
-		System.out.println(toBeChecked);
+//		System.out.println(toBeChecked);
 		resp.set("code", 200);
 		renderJson(resp);
 	}
@@ -160,21 +166,21 @@ public class AppCheckController extends Controller {
 		String no = getPara("no");
 		List<RationalProposal> Item = RationalProposal.dao
 				.find("select * from rational_proposal WHERE rp_no='" + no + "'");
-		System.out.println("get HandleItem works!");
-		System.out.println(Item);
+//		System.out.println("get HandleItem works!");
+//		System.out.println(Item);
 
 		Record resp = new Record();
 		try {
 			String s = Item.get(0).get("picture_of_problem");
-			String[]  str_pic = null;
-			if(s!=null) {
+			String[] str_pic = null;
+			if (s != null) {
 				String[] str = s.split(";");
 				str_pic = new String[str.length];
 				for (int i = 0; i < str.length; i++) {
 					str_pic[i] = str[i].substring(17);
 				}
 			}
-			
+
 			resp.set("img", str_pic);
 		} catch (Exception e) {
 			resp.set("code", 0);
@@ -192,8 +198,8 @@ public class AppCheckController extends Controller {
 		Record resp = new Record();
 		try {
 			RationalProposal qp = getModel(RationalProposal.class, "");
-			System.out.println("qp is");
-			System.out.println(qp);
+//			System.out.println("qp is");
+//			System.out.println(qp);
 			String no = qp.getRpNo();
 			String picture_after_improve = qp.getPictureAfterImprove();
 			String actural_finish_date = qp.getActuralFinishDate().toString();
@@ -202,16 +208,19 @@ public class AppCheckController extends Controller {
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			String date = sdf.format(new Date());
 
-			//避免当picture_after_improve == null时，将‘null’存入数据库
-			if(picture_after_improve == null) {
-			Db.update("update rational_proposal set picture_after_improve=" + picture_after_improve+ ",actural_finish_date='" + actural_finish_date + "',description_after_improve='"
-					+ description_after_improve + "' WHERE rp_no ='" + no + "' ;");
-			}else {
-			Db.update("update rational_proposal set picture_after_improve='" + picture_after_improve+ "',actural_finish_date='" + actural_finish_date + "',description_after_improve='"
+			// 避免当picture_after_improve == null时，将‘null’存入数据库
+			if (picture_after_improve == null) {
+				Db.update("update rational_proposal set picture_after_improve=" + picture_after_improve
+						+ ",actural_finish_date='" + actural_finish_date + "',description_after_improve='"
+						+ description_after_improve + "' WHERE rp_no ='" + no + "' ;");
+			} else {
+				Db.update("update rational_proposal set picture_after_improve='" + picture_after_improve
+						+ "',actural_finish_date='" + actural_finish_date + "',description_after_improve='"
 						+ description_after_improve + "' WHERE rp_no ='" + no + "' ;");
 			}
-			
-			Db.update("update rational_proposal set handle_result=1,handle_date='" + date + "' WHERE rp_no ='" + no + "'");
+
+			Db.update("update rational_proposal set handle_result=1,handle_date='" + date + "' WHERE rp_no ='" + no
+					+ "'");
 
 			resp.set("code", 200);
 		} catch (Exception e) {
@@ -221,18 +230,19 @@ public class AppCheckController extends Controller {
 		renderJson(resp);
 
 	}
-	public void uploadFilehandle(){
-    	String picName = UUID.randomUUID().toString();
-    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
-    	String d = sdf.format(new Date());
-    	System.out.println(d);
-    	UploadFile file = getFile("file","rationalproposal");
-    	Record rsp = new Record();
-		file.getFile().renameTo(new File("D:\\apache-tomcat-8.0.26\\webapps\\rationalproposal\\"+picName+".jpg"));
-		String fileName = ""+d+"_handl_"+picName+".jpg;";
+
+	public void uploadFilehandle() {
+		String picName = UUID.randomUUID().toString();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String d = sdf.format(new Date());
+//		System.out.println(d);
+		UploadFile file = getFile("file", "rationalproposal");
+		Record rsp = new Record();
+		file.getFile().renameTo(new File("D:\\apache-tomcat-8.0.26\\webapps\\rationalproposal\\" + picName + ".jpg"));
+		String fileName = "" + d + "_handl_" + picName + ".jpg;";
 		rsp.set("fileName", fileName);
-    	renderJson(rsp);
-    }
+		renderJson(rsp);
+	}
 
 	public void getMyList() {
 		String jobnumber = getPara("jobnumber");
@@ -258,7 +268,7 @@ public class AppCheckController extends Controller {
 			List<RationalProposal> list1 = RationalProposal.dao
 					.find("select * from rational_proposal WHERE find_userid ='" + jobnumber + "' AND is_checked = 0");
 
-			resp1.set("title", "已发起");
+			resp1.set("title", "待审核");
 			resp1.set("number", list1.size());
 			resp1.set("showBadge", true);
 			resp1.set("data", list1);
@@ -316,24 +326,25 @@ public class AppCheckController extends Controller {
 			e.printStackTrace();
 		}
 		records[4] = resp4;
-		System.out.println(records.toString());
+//		System.out.println(records.toString());
 		renderJson(records);
 
 	}
+
 	public void tocancle() {
 		String rpno = getPara("rpno");
 		Record resp = new Record();
 		try {
-		int Item = Db.update("delete from rational_proposal WHERE rp_no='" + rpno + "'");
-		System.out.println("cancle item works!");
-		System.out.println(Item);
-		resp.set("isdelete", Item);
-		resp.set("code", 200);
+			int Item = Db.update("delete from rational_proposal WHERE rp_no='" + rpno + "'");
+//			System.out.println("cancle item works!");
+//			System.out.println(Item);
+			resp.set("isdelete", Item);
+			resp.set("code", 200);
 		} catch (Exception e) {
 			resp.set("code", 0);
 			e.printStackTrace();
 		}
-		
+
 		renderJson(resp);
 
 	}
@@ -342,15 +353,15 @@ public class AppCheckController extends Controller {
 		String no = getPara("no");
 		List<RationalProposal> Item = RationalProposal.dao
 				.find("select * from rational_proposal WHERE rp_no='" + no + "'");
-		System.out.println("getListItems works!");
-		System.out.println(Item);
+//		System.out.println("getListItems works!");
+//		System.out.println(Item);
 
 		Record resp = new Record();
-		//获取问题图片
+		// 获取问题图片
 		try {
 			String s = Item.get(0).get("picture_of_problem");
-			String[]  str_pic = null;
-			if(s!=null) {
+			String[] str_pic = null;
+			if (s != null) {
 				System.out.println("s is");
 				System.out.println(s);
 				String[] str = s.split(";");
@@ -360,47 +371,52 @@ public class AppCheckController extends Controller {
 				}
 			}
 			resp.set("img", str_pic);
-		}catch (Exception e) {
+		} catch (Exception e) {
 			resp.set("code", 0);
 			resp.set("msg", "获取图片失败，原因：" + e.getMessage());
 			e.printStackTrace();
 		}
-		//获取整改后图片
-		
-			String s2 = Item.get(0).get("picture_after_improve");
-			System.out.println("s2 is");
-			System.out.println(s2);
-			String[] str_pic2 = null;
-			if(s2!=null) {
-				System.out.println("s2!=null ");
-				String[] str2 = s2.split(";");
-				str_pic2 = new String[str2.length];
-				for (int i = 0; i < str2.length; i++) {
-					str_pic2[i] = str2[i].substring(17);
-				}
+		// 获取整改后图片
+
+		String s2 = Item.get(0).get("picture_after_improve");
+//		System.out.println("s2 is");
+//		System.out.println(s2);
+		String[] str_pic2 = null;
+		if (s2 != null) {
+//			System.out.println("s2!=null ");
+			String[] str2 = s2.split(";");
+			str_pic2 = new String[str2.length];
+			for (int i = 0; i < str2.length; i++) {
+				str_pic2[i] = str2[i].substring(17);
 			}
-			resp.set("img2", str_pic2);
-		
+		}
+		resp.set("img2", str_pic2);
+
 		resp.set("getCheckItem", Item);
 		resp.set("code", 200);
 		renderJson(resp);
 
 	}
+
 	public void getRankingList() {
 		String selectedMonth = getPara("selectedMonth");
 		String sql_RankingListByName = "";
 		String sql_RankingListByWorkshop = "";
 		String sql_RankingListByDept = "";
-		
+
 		Record[] records = new Record[3];
-		if("".equals(selectedMonth) || selectedMonth==null) {
-			sql_RankingListByName = "SELECT SUM(scores) total_scores,COUNT(*) total_items, find_userid,find_username FROM rational_proposal WHERE audit_result <> 0 GROUP BY find_userid,find_username having total_scores>0 ORDER BY SUM(scores) DESC limit 50";
-			sql_RankingListByWorkshop = "SELECT SUM(scores) total_scores,COUNT(*) total_items, workshop FROM rational_proposal WHERE audit_result <> 0 GROUP BY workshop having total_scores>0 ORDER BY SUM(scores) DESC";
-			sql_RankingListByDept = "SELECT SUM(scores) total_scores,COUNT(*) total_items, department FROM rational_proposal WHERE audit_result <> 0 GROUP BY department having total_scores>0 ORDER BY SUM(scores) DESC";
-		}else {
-			sql_RankingListByName = "SELECT SUM(scores) total_scores,COUNT(*) total_items, find_userid,find_username  FROM rational_proposal WHERE audit_result <> 0 AND create_time like '"+selectedMonth+"%'  GROUP BY find_userid,find_username having total_scores>0 ORDER BY SUM(scores) DESC limit 50";
-			sql_RankingListByWorkshop = "SELECT SUM(scores) total_scores,COUNT(*) total_items, workshop FROM rational_proposal WHERE audit_result <> 0 AND create_time like '"+selectedMonth+"%' GROUP BY workshop having total_scores>0 ORDER BY SUM(scores) DESC";
-			sql_RankingListByDept = "SELECT SUM(scores) total_scores,COUNT(*) total_items, department FROM rational_proposal WHERE audit_result <> 0 AND create_time like '"+selectedMonth+"%' GROUP BY department having total_scores>0 ORDER BY SUM(scores) DESC";
+		if ("".equals(selectedMonth) || selectedMonth == null) {
+			sql_RankingListByName = "SELECT SUM(scores+addScore) total_scores,COUNT(*) total_items,find_user_part_name, find_userid,find_username FROM rational_proposal WHERE audit_result <> 0 GROUP BY find_userid,find_username having total_scores>0 ORDER BY SUM(scores+addScore) DESC";
+			sql_RankingListByWorkshop = "SELECT SUM(scores+addScore) total_scores,COUNT(*) total_items, find_user_part_name,workshop FROM rational_proposal WHERE audit_result <> 0 GROUP BY workshop having total_scores>0 ORDER BY SUM(scores+addScore) DESC";
+			sql_RankingListByDept = "SELECT SUM(scores+addScore) total_scores,COUNT(*) total_items, find_user_part_name,department FROM rational_proposal WHERE audit_result <> 0 GROUP BY department having total_scores>0 ORDER BY SUM(scores+addScore) DESC";
+		} else {
+			sql_RankingListByName = "SELECT SUM(scores+addScore) total_scores,COUNT(*) total_items,find_user_part_name, find_userid,find_username  FROM rational_proposal WHERE audit_result <> 0 AND create_time like '"
+					+ selectedMonth
+					+ "%'  GROUP BY find_userid,find_username having total_scores>0 ORDER BY SUM(scores+addScore) DESC limit 50";
+			sql_RankingListByWorkshop = "SELECT SUM(scores+addScore) total_scores,COUNT(*) total_items,find_user_part_name, workshop FROM rational_proposal WHERE audit_result <> 0 AND create_time like '"
+					+ selectedMonth + "%' GROUP BY workshop having total_scores>0 ORDER BY SUM(scores+addScore) DESC";
+			sql_RankingListByDept = "SELECT SUM(scores+addScore) total_scores,COUNT(*) total_items,find_user_part_name, department FROM rational_proposal WHERE audit_result <> 0 AND create_time like '"
+					+ selectedMonth + "%' GROUP BY department having total_scores>0 ORDER BY SUM(scores+addScore) DESC";
 		}
 		List<RationalProposal> RankingListByName = RationalProposal.dao.find(sql_RankingListByName);
 		Record resp0 = new Record();
@@ -410,7 +426,7 @@ public class AppCheckController extends Controller {
 		resp0.set("number", RankingListByName.size());
 		resp0.set("title", "个人排名");
 		records[0] = resp0;
-		
+
 		List<RationalProposal> RankingListByWorkshop = RationalProposal.dao.find(sql_RankingListByWorkshop);
 		Record resp1 = new Record();
 		resp1.set("RankingList", RankingListByWorkshop);
@@ -419,7 +435,7 @@ public class AppCheckController extends Controller {
 		resp1.set("number", RankingListByWorkshop.size());
 		resp1.set("title", "车间排名");
 		records[1] = resp1;
-		
+
 		List<RationalProposal> RankingListByDept = RationalProposal.dao.find(sql_RankingListByDept);
 		Record resp2 = new Record();
 		resp2.set("RankingList", RankingListByDept);
@@ -428,90 +444,232 @@ public class AppCheckController extends Controller {
 		resp2.set("number", RankingListByDept.size());
 		resp2.set("title", "部门排名");
 		records[2] = resp2;
-		
+
 		renderJson(records);
 	}
-		
+
 	public void getPrizeList() {
 		List<RpPrizeList> PrizeList = RpPrizeList.dao.find("select * from rp_prize_list order by cost_score ");
 		Record resp = new Record();
 		resp.set("PrizeList", PrizeList);
 		resp.set("code", 200);
 		renderJson(resp);
-		
+
 	}
-	
-	public void toExchangePrize() throws Exception{
+
+	public void toExchangePrize() throws Exception {
 		String requestUserId = getPara("requestUserId");
 		String requestUserName = getPara("requestUserName");
-		
-		String requestUserNameutf8= new String(requestUserName.getBytes("iso-8859-1"), "utf-8");
+
+		String requestUserNameutf8 = new String(requestUserName.getBytes("iso-8859-1"), "utf-8");
 		String selectPrizeName = getPara("selectPrizeName");
-		
-		String selectPrizeNameutf8= new String(selectPrizeName.getBytes("iso-8859-1"), "utf-8");
+
+		String selectPrizeNameutf8 = new String(selectPrizeName.getBytes("iso-8859-1"), "utf-8");
 		String selectPrizeIndex = getPara("selectPrizeIndex");
-		
+
 		String requestScore = getPara("requestScore");
 		int score = Integer.parseInt(requestScore);
-		
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
-    	String date = sdf.format(new Date());
-    	
-    	System.out.println("selectPrizeName");
-    	System.out.println(selectPrizeName);
-    	System.out.println("selectPrizeName to utf8");
-    	System.out.println(new String(selectPrizeName.getBytes("iso-8859-1"), "utf-8"));
-    	
+
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String date = sdf.format(new Date());
+
+//		System.out.println("selectPrizeName");
+//		System.out.println(selectPrizeName);
+//		System.out.println("selectPrizeName to utf8");
+//		System.out.println(new String(selectPrizeName.getBytes("iso-8859-1"), "utf-8"));
+
 		List<RationalProposal> total_score = RationalProposal.dao
-				.find("select ifnull(SUM(scores),0) total from rational_proposal WHERE find_userid = '"+requestUserId+"'");
+				.find("select ifnull(SUM(scores+addScore),0) total from rational_proposal WHERE find_userid = '" + requestUserId
+						+ "'");
 		Object totalScore = total_score.get(0).get("total");
-		int total = Integer.parseInt(String.valueOf(totalScore ));
-		
-		List<RpPrizeExchangeList> used_score = RpPrizeExchangeList.dao
-				.find("select SUM(score) total from rp_prize_exchange_list WHERE apply_userid = '"+requestUserId+"'");
+		int total = Integer.parseInt(String.valueOf(totalScore));
+
+		List<RpPrizeExchangeList> used_score = RpPrizeExchangeList.dao.find(
+				"select SUM(score) total from rp_prize_exchange_list WHERE apply_userid = '" + requestUserId + "'");
 		Object usedScore = used_score.get(0).get("total");
-		System.out.println("usedScore is");
-		System.out.println(usedScore);
-		int used =0;
-		if(usedScore!=null) {
-			used = Integer.parseInt(String.valueOf(usedScore ));
+//		System.out.println("usedScore is");
+//		System.out.println(usedScore);
+		int used = 0;
+		if (usedScore != null) {
+			used = Integer.parseInt(String.valueOf(usedScore));
 		}
-		
+
 		Record resp = new Record();
-		if((total-score-used)<0) {//剩余分值不足所需分值的情况
+		if ((total - score - used) < 0) {// 剩余分值不足所需分值的情况
 			resp.set("code", 0);
-			resp.set("restscore", (total-used));
-		}else{//剩余分值足够
-			Db.update("insert into rp_prize_exchange_list values(null,'"+requestUserId+"','"+requestUserNameutf8+"','"+date+"',"+score+",'"+selectPrizeNameutf8+"',"+selectPrizeIndex+")");
+			resp.set("restscore", (total - used));
+		} else {// 剩余分值足够
+			Db.update("insert into rp_prize_exchange_list values(null,'" + requestUserId + "','" + requestUserNameutf8
+					+ "','" + date + "'," + score + ",'" + selectPrizeNameutf8 + "'," + selectPrizeIndex + ")");
 			resp.set("code", 200);
-			resp.set("restscore", (total-score-used));
-		};
+			resp.set("restscore", (total - score - used));
+		}
+		;
 		resp.set("score", score);
 		resp.set("total", total);
 		resp.set("used", used);
 		renderJson(resp);
+
+	}
+
+	public void getMyMessage() {
+		Record resp = new Record();
+		String userid = getPara("userid");
+
+		String sql = "SELECT SUM(scores+addScore) total_scores,COUNT(*) total_items FROM rational_proposal WHERE audit_result <> 0 and find_userid = '"
+				+ userid + "' ";
+		List<RationalProposal> scores = RationalProposal.dao.find(sql);
+
+		String sql2 = "select SUM(score) total from rp_prize_exchange_list WHERE apply_userid = '" + userid + "'";
+		List<RpPrizeExchangeList> used_score = RpPrizeExchangeList.dao.find(sql2);
+
+		String sql3 = "select * from rp_prize_exchange_list WHERE apply_userid = '" + userid + "'";
+		List<RpPrizeExchangeList> myExchangeList = RpPrizeExchangeList.dao.find(sql3);
+
+		resp.set("scores", scores);
+		resp.set("used_score", used_score);
+		resp.set("myExchangeList", myExchangeList);
+		resp.set("code", 200);
+		renderJson(resp);
+
+	}
+
+	public void getDoubleAuditList() {
+		List<RationalProposal> DoubleAuditList = RationalProposal.dao.find(
+				"select * from rational_proposal where is_checked=1 And audit_result=1 and (is_excellent+is_difficult>0) and desc_aft_db_audit is NULL order by create_time desc ");
+		Record resp = new Record();
+		resp.set("DoubleAuditList", DoubleAuditList);
+		resp.set("code", 200);
+		renderJson(resp);
+
+	}
+
+	public void submitDoubleAudit() {
+//	String no = getPara("no");
+		Record resp = new Record();
+		try {
+			RationalProposal qp = getModel(RationalProposal.class, "");
+			String no = qp.getRpNo();
+			String handler_userid = qp.getHandlerUserid();
+			String handler_username = qp.getHandlerUsername();
+			Integer is_excellent_aft_ck = qp.getIsExcellentAftCk();
+			Integer is_difficult_aft_ck = qp.getIsDifficultAftCk();
+			String desc = qp.getDescAftDbAudit();
+
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+			String date = sdf.format(new Date());
+
+			String sql = "update rational_proposal set desc_aft_db_audit='" + desc + "' , handler_userid='" + handler_userid + "' , handler_username='" + handler_username + "'";
+			if ((is_excellent_aft_ck) == 1) {
+				sql += " ,is_excellent_aft_ck=1 ";
+			} else {
+				sql += " ,is_excellent_aft_ck=0 ";
+			}
+			if ((is_difficult_aft_ck) == 1) {
+				sql += " ,is_difficult_aft_ck=1 ";
+			} else {
+				sql += " ,is_difficult_aft_ck=0 ";
+			}
+			sql += " WHERE rp_no ='" + no + "'";
+			Db.update(sql);
+
+			resp.set("code", 200);
+		} catch (Exception e) {
+			resp.set("code", 0);
+			e.printStackTrace();
+		}
+		renderJson(resp);
+	}
+
+	public void getExcellentList() {
+		List<RationalProposal> ExcellentList = RationalProposal.dao.find(
+				"select * from rational_proposal where is_checked=1 And audit_result=1 and is_excellent=1 and is_excellent_aft_ck=1 order by create_time desc ");
+		Record resp = new Record();
+		resp.set("ExcellentList", ExcellentList);
+		resp.set("code", 200);
+		renderJson(resp);
+
+	}
+
+	public void getCommunityDataList() {
+		String sql1 = "(SELECT *,SUM(isLike) AS sumlike,GROUP_CONCAT(userid) AS likeuserid FROM rational_proposal r LEFT JOIN rp_like l ON r.rp_no=l.`rp_num` WHERE is_checked=1 AND audit_result=1 GROUP BY r.`rp_no`) AS liketable";
+//		String y = "\"";
+//		String s = " '["+y+"',l.`id`,'"+y+",','"+y+"',l.`comment_userid`,'"+y+",','"+y+"',l.`comment_username`,'"+y+",','"+y+"',l.`comment_content`,'"+y+"]'";
+//		String sql2 = "(SELECT r.rp_no,l.`comment_userid`,l.`comment_username`,GROUP_CONCAT(CONCAT("+s+")) AS newcontent,l.`isComment`,COUNT(isComment) AS sumcomment,GROUP_CONCAT(comment_userid) AS comment_userids FROM rational_proposal r LEFT JOIN rp_comment l ON r.rp_no=l.`rp_numb` WHERE is_checked=1 AND audit_result=1 GROUP BY r.`rp_no` ) AS commenttable";
+		String sql2 = "(SELECT r.rp_no,l.`comment_userid`,l.`comment_username`,GROUP_CONCAT(CONCAT(l.`id`,'$^$',l.`comment_userid`,'$^$',l.`comment_username`,'$^$',l.`comment_content`,'*&^')) AS newcontent,l.`isComment`,COUNT(isComment) AS sumcomment,GROUP_CONCAT(comment_userid) AS comment_userids FROM rational_proposal r LEFT JOIN rp_comment l ON r.rp_no=l.`rp_numb` WHERE is_checked=1 AND audit_result=1 GROUP BY r.`rp_no` ) AS commenttable";
+
+		String sql = "SELECT * FROM " + sql1 + " left join " + sql2
+				+ " ON liketable.rp_no=commenttable.rp_no ORDER BY liketable.`rp_no` DESC";
+		List<RationalProposal> CommunityDataList = RationalProposal.dao.find(sql);
+		Record resp = new Record();
+		resp.set("CommunityDataList", CommunityDataList);
+		resp.set("code", 200);
+		renderJson(resp);
+
+	}
+
+	public void like() {
+
+		String likeuserid = getPara("likeuserid");
+		String rp_num = getPara("rpno");
+		Record resp = new Record();
+
+		if (rp_num != null && likeuserid != null) {
+			String sql = "INSERT INTO rp_like (rp_num,userid,isLike) Values ('" + rp_num + "','" + likeuserid + "',1)";
+			Db.update(sql);
+			resp.set("code", 200);
+		} else {
+			resp.set("code", 0);
+		}
+		renderJson(resp);
+
+	}
+
+	public void submitcomment() {
+
+		String rp_num = getPara("rpno");
+		String commentuserid = getPara("commentuserid");
+		String commentusername = getPara("commentusername");
+		String comment_content = getPara("comment_content");
 		
+		Record resp = new Record();
+
+		if (rp_num != null && commentuserid != null) {
+			String sql = "INSERT INTO rp_comment (rp_numb,comment_userid,comment_username,comment_content,isComment) Values ('" + rp_num + "','" + commentuserid + "','" + commentusername + "','" + comment_content + "',1)";
+			Db.update(sql);
+			List<Record> maxId = Db.find("select * from rp_comment");
+			String id = maxId.get(maxId.size()-1).getStr("id");
+//			System.out.println(id);
+			resp.set("code", 200);
+			resp.set("maxId", id);
+			
+		} else {
+			resp.set("code", 0);
+		}
+		renderJson(resp);
+
 	}
 	
-	public void getMyMessage() {
-			Record resp = new Record();
-			String userid = getPara("userid");
-			
-			String sql = "SELECT SUM(scores) total_scores,COUNT(*) total_items FROM rational_proposal WHERE audit_result <> 0 and find_userid = '"+userid+"' ";
-			List<RationalProposal> scores = RationalProposal.dao.find(sql);
-			
-			String sql2 = "select SUM(score) total from rp_prize_exchange_list WHERE apply_userid = '"+userid+"'";
-			List<RpPrizeExchangeList> used_score = RpPrizeExchangeList.dao.find(sql2);
-			
-			String sql3 = "select * from rp_prize_exchange_list WHERE apply_userid = '"+userid+"'";
-			List<RpPrizeExchangeList> myExchangeList = RpPrizeExchangeList.dao.find(sql3);
-			
-			
-			resp.set("scores", scores);
-			resp.set("used_score", used_score);
-			resp.set("myExchangeList", myExchangeList);
+	public void deleteComment() {
+
+		String id = getPara("id");
+		
+		Record resp = new Record();
+//		System.out.println("id item is");
+//		System.out.println(id);
+		if (id != null ) {
+			Record deleteItem =Db.findById("rp_comment", id);
+//			System.out.println("delete item is");
+//			System.out.println(deleteItem);
+			String rpnum = deleteItem.getStr("rp_numb");
+			Db.deleteById("rp_comment", id);
+			resp.set("rpnum", rpnum);
 			resp.set("code", 200);
-			renderJson(resp);
-			
+		} else {
+			resp.set("code", 0);
 		}
+		renderJson(resp);
+
+	}
+
 }

@@ -302,6 +302,11 @@ public class CommonController extends BaseController {
 		        .fixedTitles()
 		        .build(dataMapList);
 		String filename = body.getString("filename")+"_"+new SimpleDateFormat("yyyy-MM-dd_HH_mm_ss").format(new Date())+".xlsx";
+		File fi = new File(p.get("domin_path")+"/export");
+//		if(!fi.isDirectory()) {
+//			fi.mkdir();
+//			System.out.println("mkdir export");
+//		};
 	    File file = new File(p.get("domin_path")+"/export/"+filename);
 	    try {
 			FileExportUtil.export(workbook,file);

@@ -27,7 +27,9 @@ public class _MappingKit {
 		arp.addMapping("rational_proposal", "id", RationalProposal.class);
 		arp.addMapping("role_permission", "id", RolePermission.class);
 		arp.addMapping("roles", "id", Roles.class);
+		arp.addMapping("rp_comment", "id", RpComment.class);
 		arp.addMapping("rp_improve_type", "id", RpImproveType.class);
+		arp.addMapping("rp_like", "no", RpLike.class);
 		arp.addMapping("rp_line_structure", "id", RpLineStructure.class);
 		arp.addMapping("rp_prize_exchange_list", "id", RpPrizeExchangeList.class);
 		arp.addMapping("rp_prize_list", "id", RpPrizeList.class);

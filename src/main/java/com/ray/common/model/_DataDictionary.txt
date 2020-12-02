@@ -147,41 +147,47 @@ Table: permissions
 -----------------+--------------+------+-----+---------+---------
 
 Table: rational_proposal
----------------------------+----------------------+------+-----+---------+---------
- Field                     | Type                 | Null | Key | Default | Remarks 
----------------------------+----------------------+------+-----+---------+---------
- id                        | INT(10)              | NO   | PRI |         |         
- create_time               | DATE(10)             | YES  |     |         | 创建时间    
- rp_no                     | VARCHAR(128)         | YES  |     |         | 编号      
- release_date              | DATE(10)             | YES  |     |         | 发布日期    
- find_userid               | VARCHAR(128)         | YES  |     |         | 问题第一发现人员工ID
- find_username             | VARCHAR(128)         | YES  |     |         | 问题第一发现人姓名
- find_user_part_id         | VARCHAR(128)         | YES  |     |         | 问题第一发现人部门ID
- find_user_part_name       | VARCHAR(128)         | YES  |     |         | 问题第一发现人部门名称
- department                | VARCHAR(128)         | YES  |     |         | 问题所在事业部 
- workshop                  | VARCHAR(128)         | YES  |     |         | 问题所在车间  
- prodcutionLine            | VARCHAR(128)         | YES  |     |         | 问题所在产线  
- proposal                  | MEDIUMTEXT(16777215) | YES  |     |         | 改善建议    
- description               | MEDIUMTEXT(16777215) | YES  |     |         | 问题描述    
- picture_of_problem        | VARCHAR(2000)        | YES  |     |         | 问题图片    
- improve_type              | VARCHAR(128)         | YES  |     |         | 改善类型    
- is_checked                | INT(10)              | YES  |     |         | 是否已审核，0=未审核，1=已审核
- auditor_userid            | VARCHAR(128)         | YES  |     |         | 审核人ID   
- auditor_username          | VARCHAR(128)         | YES  |     |         | 审核人姓名   
- approve_date              | DATE(10)             | YES  |     |         | 审核日期    
- audit_result              | INT(10)              | YES  |     |         | 审核结果，0=拒绝，1=同意
- audit_opinion             | VARCHAR(255)         | YES  |     |         | 审核意见    
- scores                    | INT(10)              | YES  |     |         | 分值      
- commit_finish_date        | DATE(10)             | YES  |     |         | 预计完成时间  
- description_after_improve | TEXT(65535)          | YES  |     |         | 问题完成情况描述
- handler_username          | VARCHAR(128)         | YES  |     |         | 处理人姓名   
- handler_userid            | VARCHAR(128)         | YES  |     |         | 处理人ID   
- actural_finish_date       | DATE(10)             | YES  |     |         | 实际完成时间  
- handle_result             | INT(10)              | YES  |     | 0       | 处理结果：0=未处理，1=已处理, 默认为0
- handle_date               | DATE(10)             | YES  |     |         | 处理完成日期（填表日期）
- picture_after_improve     | VARCHAR(2000)        | YES  |     |         | 整改后照片   
- comment                   | VARCHAR(255)         | YES  |     |         | 备注      
----------------------------+----------------------+------+-----+---------+---------
+---------------------------+----------------------+------+-----+-------------------+---------
+ Field                     | Type                 | Null | Key | Default           | Remarks 
+---------------------------+----------------------+------+-----+-------------------+---------
+ id                        | INT(10)              | NO   | PRI |                   |         
+ create_time               | DATE(10)             | YES  |     |                   | 创建时间    
+ rp_no                     | VARCHAR(128)         | YES  |     |                   | 编号      
+ release_date              | DATETIME(19)         | YES  |     | CURRENT_TIMESTAMP | 发布日期    
+ find_userid               | VARCHAR(128)         | YES  |     |                   | 发起人员工ID 
+ find_username             | VARCHAR(128)         | YES  |     |                   | 发起人姓名   
+ find_user_part_id         | VARCHAR(128)         | YES  |     |                   | 发起人部门ID 
+ find_user_part_name       | VARCHAR(128)         | YES  |     |                   | 发起人部门名称 
+ department                | VARCHAR(128)         | YES  |     |                   | 问题所在事业部 
+ workshop                  | VARCHAR(128)         | YES  |     |                   | 问题所在车间  
+ prodcutionLine            | VARCHAR(128)         | YES  |     |                   | 问题所在产线  
+ proposal                  | MEDIUMTEXT(16777215) | YES  |     |                   | 改善建议    
+ description               | MEDIUMTEXT(16777215) | YES  |     |                   | 问题描述    
+ picture_of_problem        | VARCHAR(2000)        | YES  |     |                   | 问题图片    
+ improve_type              | VARCHAR(128)         | YES  |     |                   | 改善类型    
+ is_checked                | INT(10)              | YES  |     |                   | 是否已审核，0=未审核，1=已审核
+ auditor_userid            | VARCHAR(128)         | YES  |     |                   | 审核人ID   
+ auditor_username          | VARCHAR(128)         | YES  |     |                   | 审核人姓名   
+ approve_date              | DATE(10)             | YES  |     |                   | 审核日期    
+ audit_result              | INT(10)              | YES  |     |                   | 审核结果，0=拒绝，1=同意
+ audit_opinion             | VARCHAR(255)         | YES  |     |                   | 审核意见    
+ scores                    | INT(10)              | YES  |     |                   | 基础分     
+ addScore                  | INT(10)              | YES  |     | 0                 | 附加分     
+ commit_finish_date        | DATE(10)             | YES  |     |                   | 预计完成时间  
+ description_after_improve | TEXT(65535)          | YES  |     |                   | 问题完成情况描述
+ handler_username          | VARCHAR(128)         | YES  |     |                   | 处理人姓名   
+ handler_userid            | VARCHAR(128)         | YES  |     |                   | 处理人ID   
+ actural_finish_date       | DATE(10)             | YES  |     |                   | 实际完成时间  
+ handle_result             | INT(10)              | YES  |     | 0                 | 处理结果：0=未处理，1=已处理, 默认为0
+ handle_date               | DATE(10)             | YES  |     |                   | 处理完成日期（填表日期）
+ picture_after_improve     | VARCHAR(2000)        | YES  |     |                   | 整改后照片   
+ comment                   | VARCHAR(255)         | YES  |     |                   | 备注      
+ is_excellent              | INT(10)              | YES  |     |                   | 班长是否推荐为优秀建议：0否，1是
+ is_difficult              | INT(10)              | YES  |     |                   | 班长是否推荐困难问题：0否，1是
+ is_excellent_aft_ck       | INT(10)              | YES  |     |                   | 审核后是否同意为优秀建议：0否，1是
+ is_difficult_aft_ck       | INT(10)              | YES  |     |                   | 审核后是否同意为困难建议：0否，1是
+ desc_aft_db_audit         | TEXT(65535)          | YES  |     |                   | 同意优秀或困难意见描述(精益专员)
+---------------------------+----------------------+------+-----+-------------------+---------
 
 Table: role_permission
 ---------------+---------+------+-----+---------+---------
@@ -202,6 +208,19 @@ Table: roles
  role_desc      | VARCHAR(255) | YES  |     |         | 具体描述    
 ----------------+--------------+------+-----+---------+---------
 
+Table: rp_comment
+---------------------+----------------------+------+-----+-------------------+---------
+ Field               | Type                 | Null | Key | Default           | Remarks 
+---------------------+----------------------+------+-----+-------------------+---------
+ id                  | INT(10)              | NO   | PRI |                   | 评论id    
+ rp_numb             | VARCHAR(20)          | YES  |     |                   | 合理化建议序号id
+ comment_userid      | VARCHAR(20)          | YES  |     |                   | 评论人工号   
+ comment_username    | VARCHAR(20)          | YES  |     |                   | 评论人姓名   
+ comment_content     | MEDIUMTEXT(16777215) | YES  |     |                   | 评论内容    
+ comment_create_date | DATETIME(19)         | YES  |     | CURRENT_TIMESTAMP | 评论日期    
+ isComment           | INT(10)              | YES  |     | 0                 | 是否有评论   
+---------------------+----------------------+------+-----+-------------------+---------
+
 Table: rp_improve_type
 -------+--------------+------+-----+---------+---------
  Field | Type         | Null | Key | Default | Remarks 
@@ -209,6 +228,17 @@ Table: rp_improve_type
  id    | INT(10)      | NO   | PRI |         |         
  type  | VARCHAR(128) | YES  |     |         |         
 -------+--------------+------+-----+---------+---------
+
+Table: rp_like
+-------------+--------------+------+-----+-------------------+---------
+ Field       | Type         | Null | Key | Default           | Remarks 
+-------------+--------------+------+-----+-------------------+---------
+ no          | INT(10)      | NO   | PRI |                   | 序号      
+ rp_num      | VARCHAR(20)  | YES  |     |                   | 编号，对应rp建议编号
+ create_date | DATETIME(19) | YES  |     | CURRENT_TIMESTAMP | 发布日期    
+ userid      | VARCHAR(20)  | YES  |     |                   | 用户id    
+ isLike      | INT(10)      | YES  |     | 0                 | 是否赞，0=否或取消，1=赞
+-------------+--------------+------+-----+-------------------+---------
 
 Table: rp_line_structure
 ----------------+--------------+------+-----+---------+---------
@@ -251,7 +281,7 @@ Table: rp_shift_leader
  id                  | INT(10)      | NO   | PRI |         | 序号      
  shift_leader        | VARCHAR(128) | YES  |     |         | 班长姓名    
  shift_leader_job_no | VARCHAR(128) | YES  |     |         | 班长工号    
- pid                 | INT(10)      | YES  |     |         | 领导的序号   
+ pid                 | INT(10)      | YES  |     |         | 班长所在车间的序号
  workshop            | VARCHAR(128) | YES  |     |         | 车间      
  department          | VARCHAR(128) | YES  |     |         | 部门      
 ---------------------+--------------+------+-----+---------+---------
@@ -278,6 +308,8 @@ Table: user
  ding_user_id | VARCHAR(255) | NO   |     |                   | 钉钉USERID
  update_time  | DATETIME(19) | NO   |     | CURRENT_TIMESTAMP | 修改时间    
  create_time  | DATETIME(19) | NO   |     | CURRENT_TIMESTAMP | 创建时间    
+ rights       | VARCHAR(128) | YES  |     |                   | 权限：0无，1钉钉后台，2优秀建议审核权
+ job_number   | VARCHAR(20)  | YES  |     |                   | 工号      
 --------------+--------------+------+-----+-------------------+---------
 
 Table: user_role

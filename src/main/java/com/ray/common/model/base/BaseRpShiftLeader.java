@@ -55,7 +55,7 @@ public abstract class BaseRpShiftLeader<M extends BaseRpShiftLeader<M>> extends 
 	}
 
 	/**
-	 * 领导的序号
+	 * 班长所在车间的序号
 	 */
 	public M setPid(java.lang.Integer pid) {
 		set("pid", pid);
@@ -63,7 +63,7 @@ public abstract class BaseRpShiftLeader<M extends BaseRpShiftLeader<M>> extends 
 	}
 	
 	/**
-	 * 领导的序号
+	 * 班长所在车间的序号
 	 */
 	public java.lang.Integer getPid() {
 		return getInt("pid");
