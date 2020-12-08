@@ -1,7 +1,7 @@
-# Practice
+# RationalProposal
 
 #### 介绍
-基于元对象概念的快速建模开发平台
+Jfinal 后端项目
 
 #### 架构
 前端：vue elementUI layui
