@@ -18,6 +18,7 @@ import com.ray.common.model.RpLike;
 import com.ray.common.model.RpPrizeExchangeList;
 import com.ray.common.model.RpPrizeList;
 import com.ray.common.model.RpShiftLeader;
+import com.ray.common.model.User;
 import com.ray.util.SerialNumberUtil;
 
 public class AppCheckController extends Controller {
@@ -535,9 +536,12 @@ public class AppCheckController extends Controller {
 	}
 
 	public void getDoubleAuditList() {
+		Record resp = new Record();
 		List<RationalProposal> DoubleAuditList = RationalProposal.dao.find(
 				"select * from rational_proposal where is_checked=1 And audit_result=1 and (is_excellent+is_difficult>0) and desc_aft_db_audit is NULL order by create_time desc ");
-		Record resp = new Record();
+		List<User> userlist = User.dao.find(
+				"select ding_user_id from user where username ='admin' or username = 'manager'");
+		resp.set("userlist",userlist);
 		resp.set("DoubleAuditList", DoubleAuditList);
 		resp.set("code", 200);
 		renderJson(resp);

@@ -105,7 +105,7 @@ public class AppController extends Controller {
             request.setUserid(userId);
             request.setHttpMethod("GET");
             OapiUserGetResponse response = client.execute(request, accessToken);
-            System.out.println("getUserInfo success");
+//            System.out.println("getUserInfo success");
             return response;
         } catch (ApiException e) {
         	System.out.println("getUserInfo failed");
