@@ -196,15 +196,6 @@ public class MainConfig extends JFinalConfig {
 	public void configEngine(Engine me) {
 		//配置模板支持热加载
 		me.setDevMode(p.getBoolean("engineDevMode", false));
-		Record system = new Record();
-		system.set("company", PropKit.get("company"));
-		me.addSharedMethod(CustomAuth.class);
-		me.addSharedMethod(DingController.class);
-		me.addSharedObject("system", system);
-		me.addSharedObject("domin_url", PropKit.get("domin_url"));
-		me.addSharedObject("system_url", PropKit.get("system_url"));
-		me.addSharedMethod(new Commen());
-		//这里只有选择JFinal TPL的时候才用
 		//配置共享函数模板
 		//me.addSharedFunction("/view/common/layout.html")
 	}
@@ -230,5 +221,4 @@ public class MainConfig extends JFinalConfig {
 		server.start();
 	}
 	
-
 }

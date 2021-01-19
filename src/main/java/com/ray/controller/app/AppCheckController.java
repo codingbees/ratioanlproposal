@@ -167,9 +167,6 @@ public class AppCheckController extends Controller {
 		String no = getPara("no");
 		List<RationalProposal> Item = RationalProposal.dao
 				.find("select * from rational_proposal WHERE rp_no='" + no + "'");
-//		System.out.println("get HandleItem works!");
-//		System.out.println(Item);
-
 		Record resp = new Record();
 		try {
 			String s = Item.get(0).get("picture_of_problem");
@@ -191,16 +188,22 @@ public class AppCheckController extends Controller {
 		resp.set("getCheckItem", Item);
 		resp.set("code", 200);
 		renderJson(resp);
-
+	}
+	// 20200118 新增中止建议方法
+	public void toSuspend() {
+		Record resp = new Record();
+		RationalProposal qp = getModel(RationalProposal.class, "");
+		String no = qp.getRpNo();
+		String comment = qp.getComment();
+		Db.update("update rational_proposal set audit_result = 0 ,handle_result = 0,comment = '"+comment+"' WHERE rp_no ='" + no + "' ;");
+		resp.set("code", 200);
+		renderJson(resp);
 	}
 
 	public void submitHandle() {
-//		String no = getPara("no");
 		Record resp = new Record();
 		try {
 			RationalProposal qp = getModel(RationalProposal.class, "");
-//			System.out.println("qp is");
-//			System.out.println(qp);
 			String no = qp.getRpNo();
 			String picture_after_improve = qp.getPictureAfterImprove();
 			String actural_finish_date = qp.getActuralFinishDate().toString();
@@ -219,10 +222,8 @@ public class AppCheckController extends Controller {
 						+ "',actural_finish_date='" + actural_finish_date + "',description_after_improve='"
 						+ description_after_improve + "' WHERE rp_no ='" + no + "' ;");
 			}
-
 			Db.update("update rational_proposal set handle_result=1,handle_date='" + date + "' WHERE rp_no ='" + no
 					+ "'");
-
 			resp.set("code", 200);
 		} catch (Exception e) {
 			resp.set("code", 0);
@@ -236,7 +237,6 @@ public class AppCheckController extends Controller {
 		String picName = UUID.randomUUID().toString();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String d = sdf.format(new Date());
-//		System.out.println(d);
 		UploadFile file = getFile("file", "rationalproposal");
 		Record rsp = new Record();
 		file.getFile().renameTo(new File("D:\\apache-tomcat-8.0.26\\webapps\\rationalproposal\\" + picName + ".jpg"));
