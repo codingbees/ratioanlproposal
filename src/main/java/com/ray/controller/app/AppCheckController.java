@@ -85,12 +85,11 @@ public class AppCheckController extends Controller {
 	}
 
 	public void submitCheck() {
-//		String no = getPara("no");
+
 		Record resp = new Record();
 		try {
 			RationalProposal qp = getModel(RationalProposal.class, "");
-//			System.out.println("qp is");
-//			System.out.println(qp);
+			
 			Integer is_excellent = qp.getIsExcellent();
 			Integer is_difficult = qp.getIsDifficult();
 			String handler_userid = qp.getHandlerUserid();
@@ -128,8 +127,6 @@ public class AppCheckController extends Controller {
 		Record resp = new Record();
 		try {
 			RationalProposal qp = getModel(RationalProposal.class, "");
-//			System.out.println("qp is");
-//			System.out.println(qp);
 			String no = qp.getRpNo();
 			String audit_opinion = qp.getAuditOpinion();
 
@@ -158,19 +155,24 @@ public class AppCheckController extends Controller {
 						+ handler_userid + "'");
 		Record resp = new Record();
 		resp.set("arraytoBeChecked", toBeChecked);
-//		System.out.println(toBeChecked);
+
 		resp.set("code", 200);
 		renderJson(resp);
 	}
 
 	public void getHandleItem() {
-		String no = getPara("no");
-		List<RationalProposal> Item = RationalProposal.dao
-				.find("select * from rational_proposal WHERE rp_no='" + no + "'");
 		Record resp = new Record();
+		
+//		RationalProposal rp = getModel(RationalProposal.class,"");
+//		Object Item =rp.findFirst("select * from rational_proposal WHERE rp_no='" + getPara("rp_no") + "'");
+//		resp.set("getCheckItem", Item);
+		
+		List<RationalProposal> Item = RationalProposal.dao
+				.find("select * from rational_proposal WHERE rp_no='" + get("rp_no") + "'");
 		try {
 			String s = Item.get(0).get("picture_of_problem");
 			String[] str_pic = null;
+			//将储存图片名称的字符串转换为数组以便前台使用
 			if (s != null) {
 				String[] str = s.split(";");
 				str_pic = new String[str.length];
@@ -185,7 +187,8 @@ public class AppCheckController extends Controller {
 			resp.set("msg", "发起问题失败，原因：" + e.getMessage());
 			e.printStackTrace();
 		}
-		resp.set("getCheckItem", Item);
+		resp.set("getCheckItem", Item.get(0));
+
 		resp.set("code", 200);
 		renderJson(resp);
 	}
@@ -327,7 +330,6 @@ public class AppCheckController extends Controller {
 			e.printStackTrace();
 		}
 		records[4] = resp4;
-//		System.out.println(records.toString());
 		renderJson(records);
 
 	}
@@ -337,8 +339,6 @@ public class AppCheckController extends Controller {
 		Record resp = new Record();
 		try {
 			int Item = Db.update("delete from rational_proposal WHERE rp_no='" + rpno + "'");
-//			System.out.println("cancle item works!");
-//			System.out.println(Item);
 			resp.set("isdelete", Item);
 			resp.set("code", 200);
 		} catch (Exception e) {
@@ -354,8 +354,7 @@ public class AppCheckController extends Controller {
 		String no = getPara("no");
 		List<RationalProposal> Item = RationalProposal.dao
 				.find("select * from rational_proposal WHERE rp_no='" + no + "'");
-//		System.out.println("getListItems works!");
-//		System.out.println(Item);
+
 
 		Record resp = new Record();
 		// 获取问题图片
@@ -363,8 +362,6 @@ public class AppCheckController extends Controller {
 			String s = Item.get(0).get("picture_of_problem");
 			String[] str_pic = null;
 			if (s != null) {
-				System.out.println("s is");
-				System.out.println(s);
 				String[] str = s.split(";");
 				str_pic = new String[str.length];
 				for (int i = 0; i < str.length; i++) {
@@ -380,11 +377,9 @@ public class AppCheckController extends Controller {
 		// 获取整改后图片
 
 		String s2 = Item.get(0).get("picture_after_improve");
-//		System.out.println("s2 is");
-//		System.out.println(s2);
+
 		String[] str_pic2 = null;
 		if (s2 != null) {
-//			System.out.println("s2!=null ");
 			String[] str2 = s2.split(";");
 			str_pic2 = new String[str2.length];
 			for (int i = 0; i < str2.length; i++) {
@@ -452,63 +447,81 @@ public class AppCheckController extends Controller {
 	public void getPrizeList() {
 		List<RpPrizeList> PrizeList = RpPrizeList.dao.find("select * from rp_prize_list order by cost_score ");
 		Record resp = new Record();
+		
+		//获取总分
+		String userid = getPara("userid");
+		List<RationalProposal> total_score = RationalProposal.dao
+				.find("select ifnull(SUM(scores+addScore),0) total from rational_proposal WHERE audit_result <> 0 and find_userid = '" + userid
+						+ "'");
+		Object totalScore = total_score.get(0).get("total");
+		int total = Integer.parseInt(String.valueOf(totalScore));
+		
+		//获取已使用的分数
+		List<RpPrizeExchangeList> used_score = RpPrizeExchangeList.dao
+				.find("select ifnull(SUM(score),0) total from rp_prize_exchange_list WHERE apply_userid = '" + userid + "'");
+					
+		Object usedScore = used_score.get(0).get("total");
+		int used = Integer.parseInt(String.valueOf(usedScore)) | 0;
+		
 		resp.set("PrizeList", PrizeList);
+		resp.set("totalScore", total);
+		resp.set("usedScore", used);
 		resp.set("code", 200);
 		renderJson(resp);
 
 	}
 
 	public void toExchangePrize() throws Exception {
-		String requestUserId = getPara("requestUserId");
-		String requestUserName = getPara("requestUserName");
-
-		String requestUserNameutf8 = new String(requestUserName.getBytes("iso-8859-1"), "utf-8");
-		String selectPrizeName = getPara("selectPrizeName");
-
-		String selectPrizeNameutf8 = new String(selectPrizeName.getBytes("iso-8859-1"), "utf-8");
-		String selectPrizeIndex = getPara("selectPrizeIndex");
-
-		String requestScore = getPara("requestScore");
-		int score = Integer.parseInt(requestScore);
-
+		RpPrizeExchangeList rp = getModel(RpPrizeExchangeList.class,"");
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String date = sdf.format(new Date());
-
-//		System.out.println("selectPrizeName");
-//		System.out.println(selectPrizeName);
-//		System.out.println("selectPrizeName to utf8");
-//		System.out.println(new String(selectPrizeName.getBytes("iso-8859-1"), "utf-8"));
-
-		List<RationalProposal> total_score = RationalProposal.dao
-				.find("select ifnull(SUM(scores+addScore),0) total from rational_proposal WHERE find_userid = '" + requestUserId
-						+ "'");
-		Object totalScore = total_score.get(0).get("total");
-		int total = Integer.parseInt(String.valueOf(totalScore));
-
-		List<RpPrizeExchangeList> used_score = RpPrizeExchangeList.dao.find(
-				"select SUM(score) total from rp_prize_exchange_list WHERE apply_userid = '" + requestUserId + "'");
-		Object usedScore = used_score.get(0).get("total");
-//		System.out.println("usedScore is");
-//		System.out.println(usedScore);
-		int used = 0;
-		if (usedScore != null) {
-			used = Integer.parseInt(String.valueOf(usedScore));
-		}
-
+		rp.set("apply_date", date);
+		rp.save();
 		Record resp = new Record();
-		if ((total - score - used) < 0) {// 剩余分值不足所需分值的情况
-			resp.set("code", 0);
-			resp.set("restscore", (total - used));
-		} else {// 剩余分值足够
-			Db.update("insert into rp_prize_exchange_list values(null,'" + requestUserId + "','" + requestUserNameutf8
-					+ "','" + date + "'," + score + ",'" + selectPrizeNameutf8 + "'," + selectPrizeIndex + ")");
-			resp.set("code", 200);
-			resp.set("restscore", (total - score - used));
-		}
-		;
-		resp.set("score", score);
-		resp.set("total", total);
-		resp.set("used", used);
+		resp.set("status", 200);
+//		String requestUserId = getPara("requestUserId");
+//		String requestUserName = getPara("requestUserName");
+//
+//		
+//		String selectPrizeName = getPara("selectPrizeName");
+//
+//		
+//		String selectPrizeIndex = getPara("selectPrizeIndex");
+//
+//		String requestScore = getPara("requestScore");
+//		int score = Integer.parseInt(requestScore);
+//
+//		
+//		总分
+//		List<RationalProposal> total_score = RationalProposal.dao
+//				.find("select ifnull(SUM(scores+addScore),0) total from rational_proposal WHERE audit_result <> 0 and find_userid = '" + requestUserId
+//						+ "'");
+//		Object totalScore = total_score.get(0).get("total");
+//		int total = Integer.parseInt(String.valueOf(totalScore));
+//		
+//		已使用分值
+//		List<RpPrizeExchangeList> used_score = RpPrizeExchangeList.dao.find(
+//				"select SUM(score) total from rp_prize_exchange_list WHERE apply_userid = '" + requestUserId + "'");
+//		Object usedScore = used_score.get(0).get("total");
+//
+//		int used = 0;
+//		if (usedScore != null) {
+//			used = Integer.parseInt(String.valueOf(usedScore));
+//		}
+//
+//		if ((total - score - used) < 0) {// 剩余分值不足所需分值的情况
+//			resp.set("code", 0);
+//			resp.set("restscore", (total - used));
+//		} else {// 剩余分值足够
+//			Db.update("insert into rp_prize_exchange_list values(null,'" + requestUserId + "','" + requestUserName
+//					+ "','" + date + "'," + score + ",'" + selectPrizeName + "'," + selectPrizeIndex + ")");
+//			resp.set("code", 200);
+//			resp.set("restscore", (total - score - used));
+//		}
+//		;
+//		resp.set("score", score);
+//		resp.set("total", total);
+//		resp.set("used", used);
 		renderJson(resp);
 
 	}
@@ -553,29 +566,30 @@ public class AppCheckController extends Controller {
 		Record resp = new Record();
 		try {
 			RationalProposal qp = getModel(RationalProposal.class, "");
-			String no = qp.getRpNo();
-			String handler_userid = qp.getHandlerUserid();
-			String handler_username = qp.getHandlerUsername();
-			Integer is_excellent_aft_ck = qp.getIsExcellentAftCk();
-			Integer is_difficult_aft_ck = qp.getIsDifficultAftCk();
-			String desc = qp.getDescAftDbAudit();
-
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-			String date = sdf.format(new Date());
-
-			String sql = "update rational_proposal set desc_aft_db_audit='" + desc + "' , handler_userid='" + handler_userid + "' , handler_username='" + handler_username + "'";
-			if ((is_excellent_aft_ck) == 1) {
-				sql += " ,is_excellent_aft_ck=1 ";
-			} else {
-				sql += " ,is_excellent_aft_ck=0 ";
-			}
-			if ((is_difficult_aft_ck) == 1) {
-				sql += " ,is_difficult_aft_ck=1 ";
-			} else {
-				sql += " ,is_difficult_aft_ck=0 ";
-			}
-			sql += " WHERE rp_no ='" + no + "'";
-			Db.update(sql);
+			qp.save();
+//			String no = qp.getRpNo();
+//			String handler_userid = qp.getHandlerUserid();
+//			String handler_username = qp.getHandlerUsername();
+//			Integer is_excellent_aft_ck = qp.getIsExcellentAftCk();
+//			Integer is_difficult_aft_ck = qp.getIsDifficultAftCk();
+//			String desc = qp.getDescAftDbAudit();
+//
+//			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+//			String date = sdf.format(new Date());
+//
+//			String sql = "update rational_proposal set desc_aft_db_audit='" + desc + "' , handler_userid='" + handler_userid + "' , handler_username='" + handler_username + "'";
+//			if ((is_excellent_aft_ck) == 1) {
+//				sql += " ,is_excellent_aft_ck=1 ";
+//			} else {
+//				sql += " ,is_excellent_aft_ck=0 ";
+//			}
+//			if ((is_difficult_aft_ck) == 1) {
+//				sql += " ,is_difficult_aft_ck=1 ";
+//			} else {
+//				sql += " ,is_difficult_aft_ck=0 ";
+//			}
+//			sql += " WHERE rp_no ='" + no + "'";
+//			Db.update(sql);
 
 			resp.set("code", 200);
 		} catch (Exception e) {

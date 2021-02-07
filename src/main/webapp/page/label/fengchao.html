@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>蜂巢标签</title>
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<link rel="stylesheet" href="../../layuiadmin/layui/css/layui.css" media="all">
+<link rel="stylesheet" href="../../layuiadmin/style/admin.css" media="all">
+<link rel="stylesheet" href="../../layuiadmin/element-ui/lib/theme-chalk/index.css">
+<script src="../../layuiadmin/main.js"></script>
+</head>
+<style>
+.webcon{min-width:1000px;}
+.topbtn{margin:10px 30px;}
+.box-card{font-size:16px;}
+.qrTitle{margin-top:15px;}
+</style>
+<body>
+	<div id="app" class="webcon">
+		
+		<el-col :span="10"> 
+			<iframe ref="iframep1" id="print-iframe" style="margin-top: 20px; margin-left: 15px;" width="440"
+			height="380" src="/page/label/fengchao_iframe.html"></iframe> 
+			</el-col> 
+		<el-col :span="12">
+
+			<div class="topbtn">			
+				<el-button type="success" @click="skip">跳号</el-button>
+				<el-button type="danger" @click="print">打印</el-button>
+			</div>
+			
+
+			<el-card style="margin:10px 30px;" class="box-card">
+			<span v-show="showTotal">			
+  				本批次已还有{{form.totalBoxQty-curBox}}张标签未打印
+			</span>
+			<span v-show="!showTotal">
+  				你还没有设置总箱数
+			</span>
+  			<br />
+  			<div class="qrTitle">
+  				当前二维码内容: {{form.qrcode}}
+  			
+  			</div>
+			</el-card>
+			<div>
+				
+			
+			</div>
+			
+		<el-row>
+			
+			<el-form :model="form" label-width="80px"> 
+			<el-col :span="12">
+			
+				<el-form-item label="物料编码" :label-width="formLabelWidth">
+					<el-input v-model="form.material" autocomplete="on"></el-input> 
+				</el-form-item> 
+				<el-form-item label="生产批次" :label-width="formLabelWidth">
+					<el-input v-model="form.batNum" autocomplete="on"></el-input> 
+				</el-form-item> 
+				<el-form-item label="保质期" :label-width="formLabelWidth">
+					<el-input v-model="form.expieration" autocomplete="off"></el-input> 
+				</el-form-item> 
+				<el-form-item label="供应商编码" :label-width="formLabelWidth">
+					<el-input v-model="form.vendorCode" autocomplete="off"></el-input> 
+				</el-form-item> 
+				<el-form-item label="总箱数(选填)" :label-width="formLabelWidth">
+					<el-input v-model="form.totalBoxQty" autocomplete="off"></el-input> 
+				</el-form-item> 	
+				
+			</el-col>
+			<el-col :span="12">
+				<el-form-item label="生产日期" :label-width="formLabelWidth">
+					   <el-date-picker type="date" placeholder="选择日期" v-model="form.proDate" style="width: 100%;"></el-date-picker>
+				</el-form-item> 
+				  <el-form-item label="本箱数量" :label-width="formLabelWidth">
+					<el-input v-model="form.qty" autocomplete="off"></el-input> 
+				</el-form-item> 
+				  <el-form-item label="数量单位" :label-width="formLabelWidth">
+					<el-input v-model="form.unit" autocomplete="off"></el-input> 
+				</el-form-item> 
+				<el-form-item label="当前箱号" :label-width="formLabelWidth">
+					<el-input v-model="form.panNum" autocomplete="off"></el-input> 
+				</el-form-item> 
+				  <el-form-item>
+				    <el-button type="primary" @click="onSubmit">确认参数</el-button>
+				   
+  				</el-form-item>
+			</el-col>
+				  
+			</el-form>
+			
+		
+		</el-row>
+			
+		</el-col> 	
+		
+	</div>
+
+	<script>
+	
+	
+		const ap=new Vue({
+			el : '#app',
+			data : function() {
+				return {
+			        form: {
+			        	material:'BACA000106',
+						batNum:'SDH',
+						expieration:'360天',
+						matNum:'10101000083',
+						vendorCode:'CAUXN',
+						unit:'KG',
+						qty:25,
+						boxNum:'',
+						proDate:Date.now(),
+						totalBoxQty:'',
+						curBox:1,
+						cpdProDate:'',
+						qrcode:'',
+						panNum:'P001'
+			        },
+			        formLabelWidth: '120px',
+			        	rest:0	,
+	
+				}
+			},
+			computed:{
+					showTotal(){
+						return ''!=this.form.totalBoxQty && parseInt(this.form.totalBoxQty)>0
+						},
+					curBox(){
+							let arr = this.form.panNum.split(/[P]/)
+							console.log(arr)
+							console.log(parseInt(arr[1]))
+							console.log(isNaN(parseInt(arr[1])))
+							return parseInt(arr[1])
+							}
+				},
+			methods:{
+				onSubmit(){
+					let arr = this.form.panNum.split(/[P]/)
+					console.log(arr)
+					console.log(parseInt(arr[1]))
+					console.log(isNaN(parseInt(arr[1])))
+					if(''==arr[1] || parseInt(arr[1])<=0 || isNaN(parseInt(arr[1]))){
+						this.$message({
+					          showClose: true,
+					          message: '请输入正确的箱号,例如"P001"',
+					          type: 'error',
+					          duration:1500
+					        });
+						return;
+						}
+					/* if(parseInt(this.form.curBox)>parseInt(this.form.totalBoxQty)){
+						
+				        
+						} */
+					//日期格式化
+				    this.form.cpdProDate = this.changeTime(this.form.proDate).split("-").join("");
+
+					//箱号格式化
+					this.form.panNum = 'P'+this.getTribleNum(parseInt(arr[1]))
+						
+					//二维码内容格式化
+					this.form.qrcode = ""+this.form.material+","+this.form.vendorCode+","+this.form.cpdProDate+","+this.form.panNum
+					+","+this.form.qty;
+					
+	
+			    	this.setIframeData();
+
+				    this.$message({
+				          showClose: true,
+				          message: '数据设置成功,当前箱号'+this.form.panNum,
+				          type: 'success',
+				          duration:1500
+				        });
+					},
+				print(){
+					var iframe = document.getElementById("print-iframe");
+					if (!iframe) {
+						var el = document.getElementById("printcontent");
+						iframe = document.createElement('IFRAME');
+						var doc = null;
+						iframe.setAttribute("id", "print-iframe");
+						iframe.setAttribute('style', 'position:absolute;width:0px;height:0px;left:-500px;top:-500px;');
+						document.body.appendChild(iframe);
+						doc = iframe.contentWindow.document;
+						//这里可以自定义样式
+						//doc.write("<LINK rel="stylesheet" type="text/css" href="css/print.css">");
+						doc.write('<div>' + el.innerHTML + '</div>');
+						doc.close();
+						iframe.contentWindow.focus();
+							}
+						iframe.contentWindow.print();
+							if (navigator.userAgent.indexOf("MSIE") > 0) {
+							document.body.removeChild(iframe);
+							}
+					},
+				
+				setIframeData(){
+						
+							const mapFrame = this.$refs['iframep1'];
+
+							/* 
+							mapFrame.contentWindow.postMessage(this.form, 'http://110.186.68.166:18900' ) 
+							*/ 
+							  mapFrame.contentWindow.postMessage(this.form, "#(label_url)" )  
+							},
+				changeTime(time){
+				    if(time){
+				        var oDate = new Date(time*1),
+				            oYear = oDate.getFullYear(),
+				            oMonth = oDate.getMonth()+1,
+				            oDay = oDate.getDate(),
+				            oHour = oDate.getHours(),
+				            oMin = oDate.getMinutes(),
+				            oSen = oDate.getSeconds(),
+				            oTime = oYear +'-'+ this.getBz(oMonth) +'-'+ this.getBz(oDay) ;//拼接时间
+				        return oTime;
+				    }else{
+				        return "";
+				    }
+
+				},
+				getBz(num){
+				    if(parseInt(num) < 10){
+				        num = '0'+num;
+				    }
+				    return num;
+				},
+				getTribleNum(num){
+					if(parseInt(num) < 10){
+				        num = '00'+parseInt(num);
+				        
+				    }else if(parseInt(num) < 100){
+				    	 num = '0'+parseInt(num);
+				    	
+					    }
+
+				    return num;
+						    
+				    
+					},
+				skip(){	
+					//当前箱号跳号
+					let arr = this.form.panNum.split(/[P]/)
+					console.log(arr)
+					console.log(parseInt(arr[1]))
+					console.log(isNaN(parseInt(arr[1])))
+					if(''==arr[1] || parseInt(arr[1])<=0 || isNaN(parseInt(arr[1]))){
+						this.$message({
+					          showClose: true,
+					          message: '请输入正确的箱号,例如"P001"',
+					          type: 'error',
+					          duration:1500
+					        });
+						return;
+						}
+					if(''!=this.form.totalBoxQty){
+						if(parseInt(this.form.totalBoxQty)>0){
+							
+							if(parseInt(this.form.totalBoxQty)<=parseInt(arr[1])){
+								this.$message({
+							          showClose: true,
+							          message: '当前箱号超过最大箱号,请检查',
+							          type: 'error',
+							          duration:1500
+							        });
+								return;
+
+								}else{
+								
+									}
+							}else{
+								this.$message({
+							          showClose: true,
+							          message: '请输入正确的总箱数,例如"50"',
+							          type: 'error',
+							          duration:1500
+							        });
+								return;
+								}
+							}
+					this.form.panNum = 'P'+this.getTribleNum(parseInt(arr[1])+1)									
+					this.onSubmit()	
+					
+									  
+					},
+
+				},
+
+		})
+	</script>
+</body>
+</html>

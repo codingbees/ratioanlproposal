@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>&nbsp;</title>
+<style>
+body {
+	margin: 10px;
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+td, th {
+	padding: 0;
+}
+
+.pure-table {
+	border-collapse: collapse;
+	border-spacing: 0;
+	empty-cells: show;
+	border: 1px solid #111;
+	font-size: 14px;
+}
+
+.pure-table td, .pure-table th {
+	border-left: 1px solid #111;
+	border-width: 0 0 0 1px;
+	font-size: 18px;
+	margin: 0;
+	overflow: visible;
+	padding: 1px 0;
+	
+}
+
+.pure-table thead { //
+	background-color: #eee;
+	border-bottom: solid 1px #111;
+	color: #000;
+	text-align: center;
+	vertical-align: bottom;
+}
+
+.pure-table td {
+	background-color: transparent;
+	height: 24px;
+	text-align: center;
+	
+}
+
+.pure-table-bordered td {
+	border-bottom: 1px solid #111;
+}
+
+.pure-table-bordered tbody>tr:last-child>td {
+	border-bottom-width: 0;
+}
+
+
+.leftTd {
+	width: 95px !important;
+}
+
+.rightTd2,.rightTd {
+	width: 105px !important;
+}
+
+
+
+#qrArea {
+	text-align: center;
+	display: block;
+	padding-left: 20px;
+	margin:3px auto;
+}
+</style>
+	<script type="text/javascript" src="../../layuiadmin/jsbarcode.js"></script>
+	<!-- 此页标签需要的二维码内容长度短,因此二维码库使用.min版本 -->
+	<script type="text/javascript" src="../../layuiadmin/qrcode.min.js"></script>
+	<script type="text/javascript" src="../../layuiadmin/main.js"></script>
+	<script type="text/javascript" src="../../layuiadmin/jquery.min.js"></script>
+</head>
+<body>
+	<div id="app">
+		<div id="printcontent">
+			<table class="pure-table pure-table-bordered">
+				<tbody>
+					<tr>
+						<td class="leftTd">物料编码</td>
+						<td class="rightTd">{{formData.material}}</td>
+						<td class="leftTd"  rowspan="3">箱标签二维码</td>
+						<td class="rightTd2"  rowspan="3"><span class="qrArea" id="qrArea"></span></td>
+					</tr>
+					<tr>
+						<td class="leftTd">生产批次</td>
+						<td class="rightTd">{{formData.batNum}}</td>
+					</tr>
+					<tr>
+						<td class="leftTd">保质期</td>
+						<td class="rightTd">{{formData.expieration}}</td>
+					</tr>
+					<tr>
+						<td class="leftTd">供应商编码</td>
+						<td class="rightTd">{{formData.vendorCode}}</td>
+						<td class="leftTd2">生产日期</td>
+						<td class="rightTd">{{formData.cpdProDate}}</td>
+					</tr>
+
+					<tr>
+						<td class="leftTd">数量</td>
+						<td class="rightTd">{{formData.qty}}</td>
+						<td class="leftTd">单位</td>
+						<td class="rightTd2">{{formData.unit}}</td>
+					</tr>
+
+				</tbody>
+			</table>
+			
+		</div>
+
+	</div>
+
+	<script>
+
+
+	const app = new Vue({
+			el : '#app',
+			data : function() {
+				return {
+					formData : {
+						material:'',
+						specification:'',
+						matNum:'',
+						vendorCode:'',
+						orderNum:'',
+						lineNum:'',
+						qty:'',
+						boxNum:'',
+						proDate:'',
+						valDate:'',
+						batNum:'',
+						note:'', 
+						cpdProDate:'',
+						cpdValDate:'',
+						qrcode:'',
+						unit:'',
+						}
+				}
+			},
+
+			methods:{
+				add(e){
+					this.formData = e;
+					
+					}
+				},
+			mounted(){
+					  onmessage=function(e){					  
+
+						$("#qrArea").empty()
+						setTimeout(()=>{
+						app.add(e.data)
+								},800)
+	 
+								//Qrcode 方法源于qrcode.min.js库 生成二维码
+							
+							 var qrcode1 = new QRCode('qrArea', { 
+								  text: e.data.qrcode, 
+								  width: 60, 
+								  height: 60, 
+								  colorDark : '#000', 
+								  colorLight : '#ffffff', 
+								  correctLevel : QRCode.CorrectLevel.H,
+								}); 
+							   
+						  
+					}; 
+
+				},
+			
+				
+
+		})
+		
+	</script>
+</body>
+</html>
