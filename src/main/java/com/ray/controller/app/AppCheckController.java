@@ -474,8 +474,8 @@ public class AppCheckController extends Controller {
 	public void toExchangePrize() throws Exception {
 		RpPrizeExchangeList rp = getModel(RpPrizeExchangeList.class,"");
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		String date = sdf.format(new Date());
-		rp.set("apply_date", date);
+		
+		rp.set("apply_date", sdf.format(new Date()));
 		rp.save();
 		Record resp = new Record();
 		resp.set("status", 200);

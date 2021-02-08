@@ -13,6 +13,7 @@ import com.ray.common.model.RationalProposal;
 import com.ray.common.model.RpImproveType;
 import com.ray.common.model.RpLineStructure;
 import com.ray.common.model.RpShiftLeader;
+import com.ray.common.model.User;
 import com.ray.common.model.UserRole;
 import com.alibaba.fastjson.JSONObject;
 import com.dingtalk.api.DefaultDingTalkClient;
@@ -259,7 +260,7 @@ public class AppController extends Controller {
     	String picName = UUID.randomUUID().toString();
     	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); 
     	String d = sdf.format(new Date());
-//    	System.out.println(d);
+
     	UploadFile file = getFile("file","rationalproposal");
     	Record rsp = new Record();
 		file.getFile().renameTo(new File("D:\\apache-tomcat-8.0.26\\webapps\\rationalproposal\\"+picName+".jpg"));
@@ -275,30 +276,35 @@ public class AppController extends Controller {
     	if("".equals(userid) || userid==null) {
     		return;
     	}
-    	//如果发起人是班长，返回指定的审核人何雯
-    	if(userid!=null) {
-    		List<RpShiftLeader> auditorForLeader = RpShiftLeader.dao.find("select * from rp_shift_leader");
-    		String[] arrayAuditorNo1 = new String[auditorForLeader.size()];
-        	for (int i = 0; i < auditorForLeader.size(); i++) {
-        		arrayAuditorNo1[i] = auditorForLeader.get(i).getShiftLeaderJobNo();
-        		if(arrayAuditorNo1[i].equals(userid)) {
-//        			System.out.println("在班长列表中，userid is "+userid);
-        			String[] name =  {"何雯"};
-        			String[] jobnumber =  {"FL00026763"};
-        			resp.set("arrayAuditor", name);
-                	resp.set("arrayAuditorJobNo", jobnumber);
-                	resp.set("code",200);
-                	renderJson(resp);
-        			return ;
-        		}
-        	}
+    	
+    	//如果发起人是班长，返回指定的审核人是精益ren'yuan
+    	List<User> userManager = User.dao.find("select * from user where username = 'manager'");
+    	
+        String[] managerName = {userManager.get(0).getNickname()};
+        String[] managerId = {userManager.get(0).getDingUserId()};
+    	
+    	
+		List<RpShiftLeader> auditorForLeader = RpShiftLeader.dao.find("select * from rp_shift_leader");
+		String[] arrayAuditorNo1 = new String[auditorForLeader.size()];
+	
+    	for (int i = 0; i < auditorForLeader.size(); i++) {
+    		arrayAuditorNo1[i] = auditorForLeader.get(i).getShiftLeaderJobNo();
+    		if(arrayAuditorNo1[i].equals(userid)) {
+
+    			resp.set("arrayAuditor", managerName);
+            	resp.set("arrayAuditorJobNo", managerId);
+            	resp.set("code",200);
+            	renderJson(resp);
+    			return ;
+    		}
     	}
     	
     	
     	
     	
+    	
     	String selectws = getPara("selectws");
-//    	System.out.println("selectws is "+selectws);
+
     	if("".equals(selectws) || selectws==null) {
     		List<RpShiftLeader> auditor = RpShiftLeader.dao.find("select * from rp_shift_leader where pid = 11");
     		String[] arrayAuditor = new String[auditor.size()];
@@ -306,11 +312,11 @@ public class AppController extends Controller {
         	for (int i = 0; i < auditor.size(); i++) {
         		arrayAuditor[i] = auditor.get(i).getShiftLeader();
         		arrayAuditorNo[i] = auditor.get(i).getShiftLeaderJobNo();
-//        		System.out.println(arrayAuditorNo[i]);
+
         		if(arrayAuditorNo[i].equals(userid)) {
-//        			System.out.println("在班长列表中，userid is "+userid);
-        			resp.set("arrayAuditor", "何雯");
-                	resp.set("arrayAuditorJobNo", "FL00026763");
+
+        			resp.set("arrayAuditor", managerName);
+                	resp.set("arrayAuditorJobNo", managerId);
                 	resp.set("code",200);
                 	renderJson(resp);
         			return ;
@@ -326,14 +332,15 @@ public class AppController extends Controller {
     	List<RpShiftLeader> auditor =RpShiftLeader.dao.find("select * from rp_shift_leader where pid = (select id from rp_line_structure where productionLine='"+selectws+"'");
     	String[] arrayAuditor = new String[auditor.size()];
 		String[] arrayAuditorNo = new String[auditor.size()];
+		
     	for (int i = 0; i < auditor.size(); i++) {
     		arrayAuditor[i] = auditor.get(i).getShiftLeader();
     		arrayAuditorNo[i] = auditor.get(i).getShiftLeaderJobNo();
-    		System.out.println(arrayAuditorNo[i]);
+    		
     		if(arrayAuditorNo[i].equals(userid)) {
-    			System.out.println("在班长列表中，userid is "+userid);
-    			resp.set("arrayAuditor", "何雯");
-            	resp.set("arrayAuditorJobNo", "FL00026763");
+    			
+    			resp.set("arrayAuditor", managerName);
+            	resp.set("arrayAuditorJobNo", managerId);
             	resp.set("code",200);
             	renderJson(resp);
     			return ;
@@ -342,7 +349,7 @@ public class AppController extends Controller {
     	resp.set("arrayAuditor", arrayAuditor);
     	resp.set("arrayAuditorJobNo", arrayAuditorNo);
     	resp.set("code",200);
-//    	System.out.println(resp);
+
     	renderJson(resp);
     }
 	
