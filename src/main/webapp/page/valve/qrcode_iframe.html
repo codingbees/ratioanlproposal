@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>&nbsp;</title>
+<style>
+body {
+	margin: 0px;
+	
+	padding:0px;
+}
+
+.el-row{
+	border-left:solid 1px #000;
+	border-bottom:solid 1px #000;
+	padding-left:2px;
+	
+}
+.formRow{
+	margin:5px;
+	border-left:none;
+	border-bottom:none;
+	border-top:solid 1px #000;
+	border-right:solid 1px #000;
+	width:300px;
+	
+}
+
+
+img{
+	width:100px;
+	display:inline !important;
+}
+.qrcode{
+	height:120px;
+}
+#qrArea,#qrArea2 {
+	margin:6px; 
+	padding:0;
+	width:100px;
+	
+}
+</style>
+
+	<script type="text/javascript" src="../../layuiadmin/qrcode.js"></script>
+	<script type="text/javascript" src="../../layuiadmin/main.js"></script>
+	<script type="text/javascript" src="../../layuiadmin/jquery.min.js"></script>
+</head>
+<body>
+	<div id="app">
+			<div style="width:200px;height:50px;border:solid 1px #000;">
+			123safsdfsdfdasfasdfasdfasdf
+			</div>
+			<el-row class="formRow">
+				<el-col :span="6" >
+					<el-row >零件编号</el-row>
+					<el-row >零件名称</el-row>
+					<el-row >批次号</el-row>
+					<el-row >初始数量</el-row>
+					<el-row class="qrcode" type="flex" align="middle">二维码</el-row>
+				</el-col>
+				<el-col :span="18">
+					<el-row >{{formData.part_no}}</el-row>
+					<el-row >{{formData.part_name}}</el-row>
+					<el-row >{{formData.batch_no}}</el-row>
+					<el-row >{{formData.init_qty}}</el-row>
+					<el-row type="flex" justify="space-between" class="qrcode">
+						<el-col id="qrArea"></el-col><el-col id="qrArea2"></el-col></el-row>
+				</el-col>
+			
+			</el-row>
+		
+
+	</div>
+
+	<script>
+
+
+	const app = new Vue({
+			el : '#app',
+			data : function() {
+				return {
+					formData : {
+				        	part_no:'11',
+				        	part_name:'22',
+				        	batch_no:'33',
+				        	init_qty:'44'
+						},
+				        	qr_code:''
+				}
+			},
+
+			methods:{
+				add(e){
+					this.formData = e;
+					}
+				},
+			mounted(){
+				 onmessage=function(e){					  
+					$("#qrArea").empty()
+					$("#qrArea2").empty()
+					console.log(e)
+					setTimeout(()=>{
+						app.add(e.data)
+							},500)
+ 					let data = e.data
+ 					let qrText = data.part_no+','+data.part_name+','+data.batch_no+','+data.init_qty
+							//Qrcode 方法源于qrcode.min.js库 生成二维码
+						 var qrcode1 = new QRCode('qrArea', { 
+							  text: qrText, 
+							  width: 100, 
+							  height: 100, 
+							  colorDark : '#000', 
+							  colorLight : '#ffffff', 
+							  correctLevel : QRCode.CorrectLevel.H,
+							}); 
+					var qrcode2 = new QRCode('qrArea2', { 
+						  text: qrText, 
+						  width: 100, 
+						  height: 100, 
+						  colorDark : '#000', 
+						  colorLight : '#ffffff', 
+						  correctLevel : QRCode.CorrectLevel.H,
+						}); 
+						
+						   
+					  
+				}; 
+
+			},
+		
+				
+
+		})
+		
+	</script>
+</body>
+</html>

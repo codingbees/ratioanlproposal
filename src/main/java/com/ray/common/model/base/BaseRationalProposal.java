@@ -229,7 +229,7 @@ public abstract class BaseRationalProposal<M extends BaseRationalProposal<M>> ex
 	}
 
 	/**
-	 * 是否已审核，0=未审核，1=已审核
+	 * 是否已审核:0=未审核,1=已审核
 	 */
 	public M setIsChecked(java.lang.Integer isChecked) {
 		set("is_checked", isChecked);
@@ -237,7 +237,7 @@ public abstract class BaseRationalProposal<M extends BaseRationalProposal<M>> ex
 	}
 	
 	/**
-	 * 是否已审核，0=未审核，1=已审核
+	 * 是否已审核:0=未审核,1=已审核
 	 */
 	public java.lang.Integer getIsChecked() {
 		return getInt("is_checked");
@@ -289,7 +289,7 @@ public abstract class BaseRationalProposal<M extends BaseRationalProposal<M>> ex
 	}
 
 	/**
-	 * 审核结果，0=拒绝，1=同意
+	 * 审核结果:0=拒绝,1=同意
 	 */
 	public M setAuditResult(java.lang.Integer auditResult) {
 		set("audit_result", auditResult);
@@ -297,7 +297,7 @@ public abstract class BaseRationalProposal<M extends BaseRationalProposal<M>> ex
 	}
 	
 	/**
-	 * 审核结果，0=拒绝，1=同意
+	 * 审核结果:0=拒绝,1=同意
 	 */
 	public java.lang.Integer getAuditResult() {
 		return getInt("audit_result");
@@ -424,7 +424,7 @@ public abstract class BaseRationalProposal<M extends BaseRationalProposal<M>> ex
 	}
 
 	/**
-	 * 处理结果：0=未处理，1=已处理, 默认为0
+	 * 处理结果:0=未处理,1=已处理
 	 */
 	public M setHandleResult(java.lang.Integer handleResult) {
 		set("handle_result", handleResult);
@@ -432,7 +432,7 @@ public abstract class BaseRationalProposal<M extends BaseRationalProposal<M>> ex
 	}
 	
 	/**
-	 * 处理结果：0=未处理，1=已处理, 默认为0
+	 * 处理结果:0=未处理,1=已处理
 	 */
 	public java.lang.Integer getHandleResult() {
 		return getInt("handle_result");
@@ -484,7 +484,7 @@ public abstract class BaseRationalProposal<M extends BaseRationalProposal<M>> ex
 	}
 
 	/**
-	 * 班长是否推荐为优秀建议：0否，1是
+	 * 班长是否推荐为优秀建议:0=否,1=是
 	 */
 	public M setIsExcellent(java.lang.Integer isExcellent) {
 		set("is_excellent", isExcellent);
@@ -492,14 +492,14 @@ public abstract class BaseRationalProposal<M extends BaseRationalProposal<M>> ex
 	}
 	
 	/**
-	 * 班长是否推荐为优秀建议：0否，1是
+	 * 班长是否推荐为优秀建议:0=否,1=是
 	 */
 	public java.lang.Integer getIsExcellent() {
 		return getInt("is_excellent");
 	}
 
 	/**
-	 * 班长是否推荐困难问题：0否，1是
+	 * 班长是否推荐困难问题:0否,1是
 	 */
 	public M setIsDifficult(java.lang.Integer isDifficult) {
 		set("is_difficult", isDifficult);
@@ -507,14 +507,14 @@ public abstract class BaseRationalProposal<M extends BaseRationalProposal<M>> ex
 	}
 	
 	/**
-	 * 班长是否推荐困难问题：0否，1是
+	 * 班长是否推荐困难问题:0否,1是
 	 */
 	public java.lang.Integer getIsDifficult() {
 		return getInt("is_difficult");
 	}
 
 	/**
-	 * 审核后是否同意为优秀建议：0否，1是
+	 * 审核后是否同意为优秀建议:0否,1是
 	 */
 	public M setIsExcellentAftCk(java.lang.Integer isExcellentAftCk) {
 		set("is_excellent_aft_ck", isExcellentAftCk);
@@ -522,14 +522,14 @@ public abstract class BaseRationalProposal<M extends BaseRationalProposal<M>> ex
 	}
 	
 	/**
-	 * 审核后是否同意为优秀建议：0否，1是
+	 * 审核后是否同意为优秀建议:0否,1是
 	 */
 	public java.lang.Integer getIsExcellentAftCk() {
 		return getInt("is_excellent_aft_ck");
 	}
 
 	/**
-	 * 审核后是否同意为困难建议：0否，1是
+	 * 审核后是否同意为困难建议:0否,1是
 	 */
 	public M setIsDifficultAftCk(java.lang.Integer isDifficultAftCk) {
 		set("is_difficult_aft_ck", isDifficultAftCk);
@@ -537,7 +537,7 @@ public abstract class BaseRationalProposal<M extends BaseRationalProposal<M>> ex
 	}
 	
 	/**
-	 * 审核后是否同意为困难建议：0否，1是
+	 * 审核后是否同意为困难建议:0否,1是
 	 */
 	public java.lang.Integer getIsDifficultAftCk() {
 		return getInt("is_difficult_aft_ck");

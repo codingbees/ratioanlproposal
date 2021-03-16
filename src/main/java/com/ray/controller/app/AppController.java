@@ -128,49 +128,32 @@ public class AppController extends Controller {
     public void getWorkshop() {
     	String selectDep = get("selectDep");
     	Record	resp = new Record();
+    	String sql1 = "select * from rp_line_structure where pid =(select id from rp_line_structure where productionLine='"+selectDep+"' ) ";
+    	String sql2 = "select * from rp_line_structure where pid = (select id from rp_line_structure  where pid =(select id from rp_line_structure where productionLine='"+selectDep+"' ) ORDER BY id ASC  LIMIT 1) ";
+    	String sql3 ="select * from rp_shift_leader where pid=(select id from rp_line_structure  where pid =(select id from rp_line_structure where productionLine='"+selectDep+"' ) ORDER BY id ASC  LIMIT 1) ";
+    	
+    	//若未选择车间
     	if("".equals(selectDep) || selectDep==null) {
-    		List<RpLineStructure> ws = RpLineStructure.dao.find("select * from rp_line_structure where pid >= 1 and pid <=10");
-    		String[] array = new String[ws.size()];
-        	for (int i = 0; i < ws.size(); i++) {
-    			array[i] = ws.get(i).getProductionLine();
-    		}
-        	resp.set("array", array);
-        	List<RpLineStructure> Line = RpLineStructure.dao.find("select * from rp_line_structure where pid = 11");
-    		String[] arrayLine = new String[Line.size()];
-        	for (int i = 0; i < Line.size(); i++) {
-        		arrayLine[i] = Line.get(i).getProductionLine();
-    		}
-        	resp.set("arrayLine", arrayLine);
-        	//查询班长
-        	List<RpShiftLeader> auditor = RpShiftLeader.dao.find("select * from rp_shift_leader where pid = 11");
-        	String[] arrayAuditor = new String[auditor.size()];
-    		String[] arrayAuditorNo = new String[auditor.size()];
-        	for (int i = 0; i < auditor.size(); i++) {
-        		arrayAuditor[i] = auditor.get(i).getShiftLeader();
-        		arrayAuditorNo[i] = auditor.get(i).getShiftLeaderJobNo();
-        	}
-        	resp.set("arrayAuditor", arrayAuditor);
-        	resp.set("arrayAuditorJobNo", arrayAuditorNo);
-        	resp.set("code",200);
-        	renderJson(resp);
-        	
-        	return;
+    		sql1 = "select * from rp_line_structure where pid >= 1 and pid <=10";
+    		sql2 = "select * from rp_line_structure where pid = 11";
+    		sql3 = "select * from rp_shift_leader where pid = 11";
     	}
     	
-    	List<RpLineStructure> ws = RpLineStructure.dao.find("select * from rp_line_structure where pid =(select id from rp_line_structure where productionLine='"+selectDep+"' ) ");
+    	List<RpLineStructure> ws = RpLineStructure.dao.find(sql1);
     	String[] array = new String[ws.size()];
     	for (int i = 0; i < ws.size(); i++) {
 			array[i] = ws.get(i).getProductionLine();
 		}
     	resp.set("array", array);
-    	List<RpLineStructure> Line = RpLineStructure.dao.find("select * from rp_line_structure where pid = (select id from rp_line_structure  where pid =(select id from rp_line_structure where productionLine='"+selectDep+"' ) ORDER BY id ASC  LIMIT 1) ");
+    	
+    	List<RpLineStructure> Line = RpLineStructure.dao.find(sql2);
 		String[] arrayLine = new String[Line.size()];
     	for (int i = 0; i < Line.size(); i++) {
     		arrayLine[i] = Line.get(i).getProductionLine();
 		}
     	resp.set("arrayLine", arrayLine);
-    	//查询班长
-    	List<RpShiftLeader> auditor = RpShiftLeader.dao.find("select * from rp_shift_leader where pid=(select id from rp_line_structure  where pid =(select id from rp_line_structure where productionLine='"+selectDep+"' ) ORDER BY id ASC  LIMIT 1) ");
+    	//查询审核人
+    	List<RpShiftLeader> auditor = RpShiftLeader.dao.find(sql3);
     	String[] arrayAuditor = new String[auditor.size()];
 		String[] arrayAuditorNo = new String[auditor.size()];
     	for (int i = 0; i < auditor.size(); i++) {
@@ -193,43 +176,63 @@ public class AppController extends Controller {
     	resp.set("code",200);
     	renderJson(resp);
     }
+    
     public	void getLine() {
     	String selectws = get("selectws");
     	Record	resp = new Record();
+    	//查询精益管理员
+    	List<User> userManager = User.dao.find("select * from user where username = 'manager'");
+    	
+//        String[] managerName = {userManager.get(0).getNickname()};
+        String[] managerId = {userManager.get(0).getDingUserId()};
+        resp.set("leanUserlist", managerId);
+    	//初始化未选择车间的时候默认返回pid为11的产线
+//    	if("".equals(selectws) || selectws==null) {
+//    		List<RpLineStructure> Line = RpLineStructure.dao.find("select productionLine from rp_line_structure where pid = 11");
+//    		String[] arrayLine = new String[Line.size()];
+//        	for (int i = 0; i < Line.size(); i++) {
+//        		arrayLine[i] = Line.get(i).getProductionLine();
+//    		}
+//        	resp.set("arrayLine", arrayLine);
+//        	//查询班长
+//        	List<RpShiftLeader> auditor = RpShiftLeader.dao.find("select * from rp_shift_leader where pid = 11");
+//        	String[] arrayAuditor = new String[auditor.size()];
+//    		String[] arrayAuditorNo = new String[auditor.size()];
+//        	for (int i = 0; i < auditor.size(); i++) {
+//        		arrayAuditor[i] = auditor.get(i).getShiftLeader();
+//        		arrayAuditorNo[i] = auditor.get(i).getShiftLeaderJobNo();
+//        	}
+//        	resp.set("arrayAuditor", arrayAuditor);
+//        	resp.set("arrayAuditorJobNo", arrayAuditorNo);
+//        	resp.set("code",200);
+//        	renderJson(resp);
+//        	return;
+//    	}
+    	String sql1 = "select * from rp_line_structure where pid in (select id from rp_line_structure where productionLine='"+selectws+"' ) ";
+    	String sql2 = "select * from rp_shift_leader where pid = (select id from rp_line_structure where productionLine='"+selectws+"')";
     	if("".equals(selectws) || selectws==null) {
-    		List<RpLineStructure> Line = RpLineStructure.dao.find("select productionLine from rp_line_structure where pid = 11");
-    		String[] arrayLine = new String[Line.size()];
-        	for (int i = 0; i < Line.size(); i++) {
-        		arrayLine[i] = Line.get(i).getProductionLine();
-    		}
-        	resp.set("arrayLine", arrayLine);
-        	//查询班长
-        	List<RpShiftLeader> auditor = RpShiftLeader.dao.find("select * from rp_shift_leader where pid = 11");
-        	String[] arrayAuditor = new String[auditor.size()];
-    		String[] arrayAuditorNo = new String[auditor.size()];
-        	for (int i = 0; i < auditor.size(); i++) {
-        		arrayAuditor[i] = auditor.get(i).getShiftLeader();
-        		arrayAuditorNo[i] = auditor.get(i).getShiftLeaderJobNo();
-        	}
-        	resp.set("arrayAuditor", arrayAuditor);
-        	resp.set("arrayAuditorJobNo", arrayAuditorNo);
-        	resp.set("code",200);
-        	renderJson(resp);
-        	return;
+    		sql1="select productionLine from rp_line_structure where pid = 11";
+    		sql2="select * from rp_shift_leader where pid = 11";
     	}
-    	List<RpLineStructure> Line = RpLineStructure.dao.find("select * from rp_line_structure where pid in (select id from rp_line_structure where productionLine='"+selectws+"' ) ");
+    	
+    	List<RpLineStructure> Line = RpLineStructure.dao.find(sql1);
+    	List<RpShiftLeader> auditor =RpShiftLeader.dao.find(sql2);
+    	
+    	
+    	
     	String[] arrayLine = new String[Line.size()];
     	for (int i = 0; i < Line.size(); i++) {
     		arrayLine[i] = Line.get(i).getProductionLine();
 		}
     	resp.set("arrayLine", arrayLine);
-    	List<RpShiftLeader> auditor =RpShiftLeader.dao.find("select * from rp_shift_leader where pid = (select id from rp_line_structure where productionLine='"+selectws+"')");
+    	
     	String[] arrayAuditor = new String[auditor.size()];
 		String[] arrayAuditorNo = new String[auditor.size()];
     	for (int i = 0; i < auditor.size(); i++) {
     		arrayAuditor[i] = auditor.get(i).getShiftLeader();
     		arrayAuditorNo[i] = auditor.get(i).getShiftLeaderJobNo();
     	}
+    	
     	resp.set("arrayAuditor", arrayAuditor);
     	resp.set("arrayAuditorJobNo", arrayAuditorNo);
     	resp.set("code",200);
@@ -269,7 +272,8 @@ public class AppController extends Controller {
 		rsp.set("picName", picName+".jpg;");
     	renderJson(rsp);
     }
-    public void getAuditor() {
+    @SuppressWarnings("null")
+	public void getAuditor() {
     	Record	resp = new Record();
     	String userid = getPara("userid");
     	
@@ -277,75 +281,43 @@ public class AppController extends Controller {
     		return;
     	}
     	
-    	//如果发起人是班长，返回指定的审核人是精益ren'yuan
     	List<User> userManager = User.dao.find("select * from user where username = 'manager'");
-    	
-        String[] managerName = {userManager.get(0).getNickname()};
-        String[] managerId = {userManager.get(0).getDingUserId()};
-    	
-    	
+        String[] managerName = {null} ;
+        String[] managerId = {null};
+        Boolean isShiftLeader = false;
+        
 		List<RpShiftLeader> auditorForLeader = RpShiftLeader.dao.find("select * from rp_shift_leader");
-		String[] arrayAuditorNo1 = new String[auditorForLeader.size()];
-	
+		//如果发起人是班长，返回精益管理员信息
     	for (int i = 0; i < auditorForLeader.size(); i++) {
-    		arrayAuditorNo1[i] = auditorForLeader.get(i).getShiftLeaderJobNo();
-    		if(arrayAuditorNo1[i].equals(userid)) {
-
-    			resp.set("arrayAuditor", managerName);
-            	resp.set("arrayAuditorJobNo", managerId);
-            	resp.set("code",200);
-            	renderJson(resp);
-    			return ;
+    		if(auditorForLeader.get(i).getShiftLeaderJobNo().equals(userid)) {
+    			isShiftLeader = true;
+    			managerName[0] = userManager.get(0).getNickname();
+    			managerId[0] = userManager.get(0).getDingUserId();
+    			
     		}
     	}
-    	
-    	
-    	
-    	
-    	
+
     	String selectws = getPara("selectws");
-
+    	String sql = "select * from rp_shift_leader where pid = (select id from rp_line_structure where productionLine='"+selectws+"'";
+    	//如果未选择车间则默认返回pid为11的车间的审核人
     	if("".equals(selectws) || selectws==null) {
-    		List<RpShiftLeader> auditor = RpShiftLeader.dao.find("select * from rp_shift_leader where pid = 11");
-    		String[] arrayAuditor = new String[auditor.size()];
-    		String[] arrayAuditorNo = new String[auditor.size()];
-        	for (int i = 0; i < auditor.size(); i++) {
-        		arrayAuditor[i] = auditor.get(i).getShiftLeader();
-        		arrayAuditorNo[i] = auditor.get(i).getShiftLeaderJobNo();
-
-        		if(arrayAuditorNo[i].equals(userid)) {
-
-        			resp.set("arrayAuditor", managerName);
-                	resp.set("arrayAuditorJobNo", managerId);
-                	resp.set("code",200);
-                	renderJson(resp);
-        			return ;
-        		}
-        	}
-        	resp.set("arrayAuditor", arrayAuditor);
-        	resp.set("arrayAuditorJobNo", arrayAuditorNo);
-        	resp.set("code",200);
-        	renderJson(resp);
-        	return;
+    		sql = "select * from rp_shift_leader where pid = 11";
+    		
     	}
     	
-    	List<RpShiftLeader> auditor =RpShiftLeader.dao.find("select * from rp_shift_leader where pid = (select id from rp_line_structure where productionLine='"+selectws+"'");
+    	List<RpShiftLeader> auditor =RpShiftLeader.dao.find(sql);
     	String[] arrayAuditor = new String[auditor.size()];
 		String[] arrayAuditorNo = new String[auditor.size()];
 		
     	for (int i = 0; i < auditor.size(); i++) {
     		arrayAuditor[i] = auditor.get(i).getShiftLeader();
     		arrayAuditorNo[i] = auditor.get(i).getShiftLeaderJobNo();
-    		
-    		if(arrayAuditorNo[i].equals(userid)) {
-    			
-    			resp.set("arrayAuditor", managerName);
-            	resp.set("arrayAuditorJobNo", managerId);
-            	resp.set("code",200);
-            	renderJson(resp);
-    			return ;
-    		}
+
     	}
+    	
+    	resp.set("isShiftLeader", isShiftLeader);
+		resp.set("managerName", managerName);
+    	resp.set("managerId", managerId);
     	resp.set("arrayAuditor", arrayAuditor);
     	resp.set("arrayAuditorJobNo", arrayAuditorNo);
     	resp.set("code",200);

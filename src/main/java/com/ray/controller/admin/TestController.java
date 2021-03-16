@@ -18,4 +18,7 @@ public class TestController extends BaseController {
 		EventKit.post(new UserSaveEvent(user));
 		renderJson(Ret.ok("msg", "嘻嘻"));
 	}
+	public void frame(){
+    	render("/page/label/right.html");
+    }
 }

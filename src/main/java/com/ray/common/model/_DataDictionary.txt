@@ -165,11 +165,11 @@ Table: rational_proposal
  description               | MEDIUMTEXT(16777215) | YES  |     |                   | 问题描述    
  picture_of_problem        | VARCHAR(2000)        | YES  |     |                   | 问题图片    
  improve_type              | VARCHAR(128)         | YES  |     |                   | 改善类型    
- is_checked                | INT(10)              | YES  |     |                   | 是否已审核，0=未审核，1=已审核
+ is_checked                | INT(10)              | YES  |     |                   | 是否已审核:0=未审核,1=已审核
  auditor_userid            | VARCHAR(128)         | YES  |     |                   | 审核人ID   
  auditor_username          | VARCHAR(128)         | YES  |     |                   | 审核人姓名   
  approve_date              | DATE(10)             | YES  |     |                   | 审核日期    
- audit_result              | INT(10)              | YES  |     |                   | 审核结果，0=拒绝，1=同意
+ audit_result              | INT(10)              | YES  |     |                   | 审核结果:0=拒绝,1=同意
  audit_opinion             | VARCHAR(255)         | YES  |     |                   | 审核意见    
  scores                    | INT(10)              | YES  |     |                   | 基础分     
  addScore                  | INT(10)              | YES  |     | 0                 | 附加分     
@@ -178,14 +178,14 @@ Table: rational_proposal
  handler_username          | VARCHAR(128)         | YES  |     |                   | 处理人姓名   
  handler_userid            | VARCHAR(128)         | YES  |     |                   | 处理人ID   
  actural_finish_date       | DATE(10)             | YES  |     |                   | 实际完成时间  
- handle_result             | INT(10)              | YES  |     | 0                 | 处理结果：0=未处理，1=已处理, 默认为0
+ handle_result             | INT(10)              | YES  |     | 0                 | 处理结果:0=未处理,1=已处理
  handle_date               | DATE(10)             | YES  |     |                   | 处理完成日期（填表日期）
  picture_after_improve     | VARCHAR(2000)        | YES  |     |                   | 整改后照片   
  comment                   | VARCHAR(255)         | YES  |     |                   | 备注      
- is_excellent              | INT(10)              | YES  |     |                   | 班长是否推荐为优秀建议：0否，1是
- is_difficult              | INT(10)              | YES  |     |                   | 班长是否推荐困难问题：0否，1是
- is_excellent_aft_ck       | INT(10)              | YES  |     |                   | 审核后是否同意为优秀建议：0否，1是
- is_difficult_aft_ck       | INT(10)              | YES  |     |                   | 审核后是否同意为困难建议：0否，1是
+ is_excellent              | INT(10)              | YES  |     |                   | 班长是否推荐为优秀建议:0=否,1=是
+ is_difficult              | INT(10)              | YES  |     |                   | 班长是否推荐困难问题:0否,1是
+ is_excellent_aft_ck       | INT(10)              | YES  |     |                   | 审核后是否同意为优秀建议:0否,1是
+ is_difficult_aft_ck       | INT(10)              | YES  |     |                   | 审核后是否同意为困难建议:0否,1是
  desc_aft_db_audit         | TEXT(65535)          | YES  |     |                   | 同意优秀或困难意见描述(精益专员)
 ---------------------------+----------------------+------+-----+-------------------+---------
 
@@ -320,6 +320,56 @@ Table: user_role
  user_id | INT(10) | NO   |     |         | 用户ID    
  role_id | INT(10) | NO   |     |         | 角色ID    
 ---------+---------+------+-----+---------+---------
+
+Table: valve_delivery
+---------------+---------------+------+-----+-------------------+---------
+ Field         | Type          | Null | Key | Default           | Remarks 
+---------------+---------------+------+-----+-------------------+---------
+ id            | INT(10)       | NO   | PRI |                   |         
+ part_no       | VARCHAR(50)   | YES  |     |                   |         
+ part_name     | VARCHAR(50)   | YES  |     |                   |         
+ delivery_qty  | INT(10)       | YES  |     |                   |         
+ delivery_time | TIMESTAMP(19) | YES  |     | CURRENT_TIMESTAMP |         
+ operator      | VARCHAR(50)   | YES  |     |                   |         
+---------------+---------------+------+-----+-------------------+---------
+
+Table: valve_inventory
+--------------+---------------+------+-----+-------------------+---------
+ Field        | Type          | Null | Key | Default           | Remarks 
+--------------+---------------+------+-----+-------------------+---------
+ id           | INT(10)       | NO   | PRI |                   | 序号      
+ qr_code      | VARCHAR(255)  | YES  |     |                   | 二维码     
+ part_no      | VARCHAR(50)   | YES  |     |                   | 零件编号    
+ part_name    | VARCHAR(50)   | YES  |     |                   | 零件名称    
+ entry_qty    | INT(10)       | YES  |     | 0                 | 入库数量    
+ delivery_qty | INT(10)       | YES  |     | 0                 | 出库数量    
+ operator     | VARCHAR(255)  | YES  |     |                   | 对接人     
+ note         | VARCHAR(500)  | YES  |     |                   | 备注      
+ date_time    | TIMESTAMP(19) | YES  |     | CURRENT_TIMESTAMP | 处理时间    
+--------------+---------------+------+-----+-------------------+---------
+
+Table: valve_part_type
+-----------+-------------+------+-----+---------+---------
+ Field     | Type        | Null | Key | Default | Remarks 
+-----------+-------------+------+-----+---------+---------
+ id        | INT(10)     | NO   | PRI |         |         
+ part_type | VARCHAR(50) | YES  |     |         |         
+-----------+-------------+------+-----+---------+---------
+
+Table: valve_parts
+-------------+---------------+------+-----+-------------------+---------
+ Field       | Type          | Null | Key | Default           | Remarks 
+-------------+---------------+------+-----+-------------------+---------
+ id          | INT(10)       | NO   | PRI |                   | 序号      
+ qr_code     | VARCHAR(255)  | NO   | PRI |                   | 二维码     
+ part_no     | VARCHAR(50)   | NO   | PRI |                   | 零件编号    
+ batch_no    | VARCHAR(255)  | YES  |     |                   | 批次号     
+ init_qty    | INT(10)       | YES  |     | 0                 | 初始数量    
+ part_name   | VARCHAR(50)   | YES  |     |                   | 零件名称    
+ type        | VARCHAR(50)   | YES  |     |                   | 零件类型    
+ note        | VARCHAR(255)  | YES  |     |                   | 备注      
+ create_time | TIMESTAMP(19) | YES  |     | CURRENT_TIMESTAMP | 创建时间    
+-------------+---------------+------+-----+-------------------+---------
 
 Table: yw_test
 ------------------+---------------+------+-----+-------------------+---------

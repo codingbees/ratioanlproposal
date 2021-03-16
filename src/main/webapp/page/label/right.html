@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>校验合格表二</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <link rel="stylesheet" href="../../layuiadmin/layui/css/layui.css" media="all">
+  <link rel="stylesheet" href="../../layuiadmin/style/admin.css" media="all">
+  <script src="../../layuiadmin/main.js"></script>
+</head>
+<style>
+	.dawaik{width:233px; height:140px;overflow:hidden;}
+	.kkshang{width:233px; height:24px; background:#000;overflow:hidden; line-height:24px;}
+	.kkxia{width:233px; height:18px; background:#000;overflow:hidden;}
+	.hegez{color:white; font-size:16px; float:left; margin-left:10px;}
+	.danwei{color:white; font-size:16px; float:right; padding-right:10px;}
+	.gongsi{color:white; font-size:14px; float:left; margin-left:10px;}
+	.jiance{color:white; font-size:14px; float:right; padding-right:10px;}
+	.zhongjian{border-left:10px solid #000;box-sizing:border-box;border-right:10px solid #000;width:233px;height:98px;}
+	.zhongyig{border-top:1px solid #000;width:233px;height:24px; font-size:14px;overflow:hidden; line-height:24px;}
+	.zhongyik{border-left:1px solid #000;width:84px;height:24px; float:left; text-align:center; line-height:24px;}
+	.beizhu{border-left:1px solid #000;width:233px;height:22px;float:left;padding-left:10px;}
+	.colorlv{color:#000}
+	.teshuyig{border-top:1px solid #000;width:233px;height:38px; font-size:14px;overflow:hidden;}
+	.teshuyik{border-left:1px solid #000;width:120px;height:38px; float:left; text-align:center;line-height:36px;}
+	.teshukk{border-left:1px solid #000;width:233px;height:38px; float:left;padding-left:5px; line-height:36px;}
+	.tebieda{width:233px;height:50px; font-size:14px;overflow:hidden;}
+	.tebieLeft{width:172px;height:48px; overflow:hidden;float:left}
+	.tebieRight{width:60px;height:60px;float:left;overflow:hidden;border-top:1px solid #000;position: absolute; top:63px; left:163px;}
+	.tebieRight img{margin:0 auto;}
+	.rightcode{width:60px;height:60px;}
+</style>
+<body>
+  <div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+      <div class="layui-col-md12">
+        <div class="layui-card layui-form" lay-filter="component-form-element">
+          <div class="dawaik">
+        	<div class="tebieRight" id="tebieRight">
+      			<div class="rightcode" id="rightcode"></div>
+      		</div>
+          	<div class="kkshang">
+          		<div class="hegez">合格证</div><div class="danwei">Ⓑ</div>
+          	</div>
+          	<div class="zhongjian">
+        		<div class="zhongyig">
+          			<div class="zhongyik colorlv" style="width:60px; font-size:12px;">检具编号</div>
+          			<div class="zhongyik colorlv" style="width:84px;">#(label_url)</div>
+          		</div>
+          		<div class="zhongyig">
+          			<div class="zhongyik colorlv" style="width:60px; font-size:12px;">送检单位</div>
+          			<div class="zhongyik colorlv" style="width:84px;">#(label_url)</div>
+          		</div>
+          		<div class="tebieda">
+          			<div class="tebieLeft">
+		          		<div class="zhongyig">
+		          			<div class="zhongyik colorlv" style="width:60px; font-size:12px;">有效期</div>
+		          			<div class="zhongyik colorlv" style="font-size:12px; line-height:20px;">#(label_url)</div>
+		          		</div>
+		          		<div class="zhongyig" style="height:24px;">
+		          			<div class="zhongyik colorlv" style="width:60px; font-size:12px; height:24px;">校准员</div>
+		          			<div class="zhongyik colorlv">#(label_url)</div>
+		          		</div>
+	          		</div>
+	          	</div>
+          	</div>
+          	<div class="kkxia">
+          		<div class="gongsi" style="font-size:12px; line-height:18px;">到期前一周送计量室校准</div>
+          	</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+  <script src="../../layuiadmin/layui/layui.js"></script> 
+  <script>
+  layui.config({
+    base: '../../layuiadmin/' //静态资源所在路径
+  }).extend({
+    index: 'lib/index' //主入口模块
+  }).use(['index', 'form', 'laydate', 'table'], function(){
+    var $ = layui.$
+    ,admin = layui.admin
+    ,element = layui.element
+    ,form = layui.form
+    ,table = layui.table
+    ,laydate = layui.laydate;
+    
+    form.render(null, 'component-form-element');
+    element.render('breadcrumb', 'breadcrumb');
+    
+    laydate.render({
+      elem: '#creat_time'
+      ,value: new Date()
+    });
+    
+  });
+  
+  function iframPrint(){
+	  window.print();
+  }
+  
+  $(function(){
+	  var qrcode1 = new QRCode('rightcode', { 
+		  text: '#(info.number_bh)', 
+		  width: 60, 
+		  height: 60, 
+		  colorDark : '#000', 
+		  colorLight : '#ffffff', 
+		  correctLevel : QRCode.CorrectLevel.H,
+		});
+  })
+  </script>
+</body>
+</html>

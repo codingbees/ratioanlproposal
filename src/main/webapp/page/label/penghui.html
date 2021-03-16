@@ -167,11 +167,11 @@
 				        });
 					},
 				print(){
-					var iframe = document.getElementById("print-iframe");
+					let iframe = document.getElementById("print-iframe");
 					if (!iframe) {
-						var el = document.getElementById("printcontent");
+						const el = document.getElementById("printcontent");
 						iframe = document.createElement('IFRAME');
-						var doc = null;
+						let doc = null;
 						iframe.setAttribute("id", "print-iframe");
 						iframe.setAttribute('style', 'position:absolute;width:0px;height:0px;left:-500px;top:-500px;');
 						document.body.appendChild(iframe);
@@ -228,8 +228,6 @@
 					    }
 
 				    return num;
-						    
-				    
 					},
 				skip(){	
 						if(parseInt(this.form.curBox)>parseInt(this.form.totalBoxQty)){

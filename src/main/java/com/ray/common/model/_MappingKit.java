@@ -37,6 +37,11 @@ public class _MappingKit {
 		arp.addMapping("serial_number", "id", SerialNumber.class);
 		arp.addMapping("user", "id", User.class);
 		arp.addMapping("user_role", "id", UserRole.class);
+		arp.addMapping("valve_delivery", "id", ValveDelivery.class);
+		arp.addMapping("valve_inventory", "id", ValveInventory.class);
+		arp.addMapping("valve_part_type", "id", ValvePartType.class);
+		// Composite Primary Key order: id,part_no,qr_code
+		arp.addMapping("valve_parts", "id,part_no,qr_code", ValveParts.class);
 		arp.addMapping("yw_test", "id", YwTest.class);
 		arp.addMapping("yw_test_son", "id", YwTestSon.class);
 	}

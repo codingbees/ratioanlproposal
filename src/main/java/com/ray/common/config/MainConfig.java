@@ -27,8 +27,6 @@ import com.ray.common.quartz.QuartzPlugin;
 import com.ray.common.shiro.CustomAuth;
 import com.ray.common.ding.DingController;
 import com.ray.util.Commen;
-
-import net.dreamlu.event.EventPlugin;
 public class MainConfig extends JFinalConfig {
 	/**
 	 * 将全局配置提出来 方便其他地方重用

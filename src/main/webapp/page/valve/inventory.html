@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>电磁阀零件出入库系统</title>
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<link rel="stylesheet" href="../../layuiadmin/layui/css/layui.css" media="all">
+<link rel="stylesheet" href="../../layuiadmin/style/admin.css" media="all">
+<link rel="stylesheet" href="../../layuiadmin/element-ui/lib/theme-chalk/index.css">
+<script src="../../layuiadmin/main.js"></script>
+</head>
+<style>
+.webcon {
+	min-width: 1000px;
+	
+}
+.el-form{
+	padding:30px;
+}
+
+
+.qrTitle {
+	margin: 40px;
+	font-size:16px;
+	font-weight:bold;
+}
+</style>
+<body>
+	<div id="app" class="webcon">
+		<el-card >
+					<el-row class="qrTitle" type="flex" justify="center">
+							<el-input v-model="inputQrCode" style="width:600px;" placeholder="在此处输入二维码内容，例如‘FL08-01-01,电磁阀,10101010,450’" ></el-input> 
+					</el-row>
+				
+			<el-row type="flex" justify="center"  class="topbtn"> 
+				<!-- <el-button style="width:200px;" type="warning" @click="validateQrCode">验证二维码</el-button>  -->
+				<el-button style="width:200px;" type="success" @click="entryClick">入库</el-button> 
+				<el-button style="width:200px;" type="primary" @click="deliveryClick">出库</el-button> 
+			</el-row>
+		</el-card>
+		
+		<el-dialog title="出入库" :visible.sync="tableVisible" width="70%">
+		  <el-form :model="form" label-width="120px"> 
+			<el-row>
+				<el-form-item label="二维码" :label-width="formLabelWidth" >
+				<el-input v-model="form.qr_code" autocomplete="on" disabled></el-input> 
+				</el-form-item> 
+				
+			<el-col :span="12"> 
+			<el-form-item label="零件号" :label-width="formLabelWidth" > 
+				<el-input v-model="form.part_no" autocomplete="on" disabled></el-input> 
+			</el-form-item> 
+			<el-form-item label="入库数量":label-width="formLabelWidth"> 
+				<el-input v-model="form.entry_qty"autocomplete="on" :disabled="!showEntryQty"></el-input> 
+			</el-form-item> 
+			<el-form-item label="经办人" :label-width="formLabelWidth"> 
+				<el-input v-model="form.operator" autocomplete="on"></el-input> 
+			</el-form-item> 
+			<!-- <el-form-item label="二维码" :label-width="formLabelWidth"> 
+				<el-input v-model="form.qr_code" autocomplete="on"></el-input> 
+			</el-form-item>  -->
+		</el-col> 
+			<el-col :span="12"> 
+			<el-form-item label="零件名称" :label-width="formLabelWidth"> 
+				<el-input v-model="form.part_name" autocomplete="on" disabled></el-input> 
+			</el-form-item> 
+			<el-form-item label="出库数量":label-width="formLabelWidth"> 
+				<el-input v-model="form.delivery_qty" autocomplete="on" :disabled="!showDeliverQty"></el-input> 
+			</el-form-item> 
+		
+		<el-form-item label="备注":label-width="formLabelWidth"> 
+			<el-input v-model="form.note"autocomplete="on"></el-input> 
+		</el-form-item> 
+			</el-col> 
+		</el-form> 
+			
+		  <span slot="footer" class="dialog-footer">
+		    <el-button @click="tableVisible = false">取 消</el-button>
+		    <el-button type="primary" @click="entry">确 定</el-button>
+		  </span>
+		</el-dialog>
+		<el-row> 
+		
+
+	</el-row>
+
+	</div>
+	<script>	
+		/* import axios from 'axios' */
+		Vue.prototype.$axios = axios
+		const app=new Vue({
+			el : '#app',
+			data : function() {
+				return {
+			        form: {
+			        	qr_code:'',
+			        	part_no:'',
+			        	part_name:'',
+			        	entry_qty:'',
+			        	delivery_qty:'',
+			        	operator:'',
+			        	note:''
+			        },
+			        inputQrCode:'',
+			        formLabelWidth: '120px',
+			        tableVisible:false	,
+			        showEntryQty:false,
+			        showDeliverQty:false
+				}
+			},
+		
+			methods:{	
+				validateQrCode(){
+						let codelist = this.inputQrCode.split(",")
+						if(codelist.length!=4){
+							this.$message.error("二维码内容格式不正确")
+							return false
+							}
+						return true
+						
+					},
+				entryClick(){
+						if(!this.validateQrCode()){
+							return 
+							}
+					
+					this.tableVisible = !this.tableVisible;
+					this.showEntryQty=true;
+			        this.showDeliverQty=false;	
+			        
+			        let form  = this.form
+					let arr = this.inputQrCode.split(",")	
+					form.part_no = arr[0]
+					form.part_name = arr[1]
+			        form.delivery_qty = ''
+					form.qr_code = this.inputQrCode
+					},
+				deliveryClick(){
+						if(!this.validateQrCode()){
+							return 
+							}
+					this.tableVisible = !this.tableVisible;
+					this.showEntryQty=false;
+			        this.showDeliverQty=true;	
+			        
+			        let form  = this.form
+					let arr = this.inputQrCode.split(",")	
+					form.entry_qty = ''
+					form.part_no = arr[0]
+					form.part_name = arr[1]
+					form.qr_code = this.inputQrCode
+					},
+				/* 入库方法 */
+				entry(){
+					if(this.showEntryQty){
+							if(!(parseInt(this.form.entry_qty)>0)){
+									this.$message.error("请输入正整数")
+									return false;
+								}
+					this.form.entry_qty = parseInt(this.form.entry_qty);
+						}
+
+					if(this.showDeliverQty){
+						if(!(parseInt(this.form.delivery_qty)>0)){
+								this.$message.error("请输入正整数")
+								return false;
+							}
+					this.form.delivery_qty = parseInt(this.form.delivery_qty);
+					}
+					this.tableVisible = false	
+					
+					this.$axios({
+						url:"/valve/handleInventory",
+						params:this.form
+					}).then(res=>{
+							if(res.data.s===200){
+								 this.$message.success('库存更新成功!');
+								this.form.delivery_qty = '';
+								 this.form.entry_qty = '';
+								 
+							}else if(res.data.s===0){
+							 	this.$message.error('库存件表中没有此件号,请先建号！');
+							 	console.log(res)
+							}else{
+								console.log(res)
+								this.$message.error('数据录入失败！');
+								} 
+						})
+						
+					
+				},	
+		},
+				
+
+		})
+	</script>
+</body>
+</html>
