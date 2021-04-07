@@ -1,10 +1,14 @@
 package com.ray.controller.app;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.lang.Integer;
+import com.ray.util.Commen;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jfinal.core.Controller;
@@ -15,9 +19,11 @@ import com.jfinal.upload.UploadFile;
 import com.ray.common.model.RationalProposal;
 import com.ray.common.model.RpImproveType;
 import com.ray.common.model.RpLike;
+import com.ray.common.model.RpLineStructure;
 import com.ray.common.model.RpPrizeExchangeList;
 import com.ray.common.model.RpPrizeList;
 import com.ray.common.model.RpShiftLeader;
+import com.ray.common.model.RpStaffQty;
 import com.ray.common.model.User;
 import com.ray.util.SerialNumberUtil;
 
@@ -37,6 +43,10 @@ public class AppCheckController extends Controller {
 		String no = getPara("no");
 		List<RationalProposal> Item = RationalProposal.dao
 				.find("select * from rational_proposal WHERE rp_no='" + no + "'");
+		
+		
+		List<Record> supervisor = Db.find("select leader_name,leader_id from rp_line_structure where productionLine ="
+				+ "(select workshop from rational_proposal WHERE rp_no='" + no + "')");
 		Record resp = new Record();
 		try {
 			String s = Item.get(0).get("picture_of_problem");
@@ -46,7 +56,7 @@ public class AppCheckController extends Controller {
 				str_pic = new String[str.length];
 				for (int i = 0; i < str.length; i++) {
 					str_pic[i] = str[i].substring(17);
-					System.out.println(str_pic[i]);
+//					System.out.println(str_pic[i]);
 				}
 			}
 			// System.out.println("picture_of_problem is");
@@ -57,6 +67,7 @@ public class AppCheckController extends Controller {
 			resp.set("msg", "无法获取图片：" + e.getMessage());
 			e.printStackTrace();
 		}
+		resp.set("supervisor", supervisor);
 		resp.set("getCheckItem", Item);
 		resp.set("code", 200);
 		renderJson(resp);
@@ -90,25 +101,32 @@ public class AppCheckController extends Controller {
 		try {
 			RationalProposal qp = getModel(RationalProposal.class, "");
 			
+			String auditor_userid = qp.getAuditorUserid() ;
+			String auditor_username = qp.getAuditorUsername();
+			
 			Integer is_excellent = qp.getIsExcellent();
 			Integer is_difficult = qp.getIsDifficult();
+			String handler_username = qp.getHandlerUsername();
 			String handler_userid = qp.getHandlerUserid();
 			String rp_no = qp.getRpNo();
 			String audit_opinion = qp.getAuditOpinion();
-			String handler_username = qp.getHandlerUsername();
+			
 			Integer scores = qp.getScores();
+			
+			
 			String commit_finish_date = qp.getCommitFinishDate().toString();
 			Integer addScore = qp.getAddScore();
-			
+
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 			String date = sdf.format(new Date());
+			Integer is_checked = qp.getIsChecked();
+			
+			Db.update("update rational_proposal set auditor_userid='"+auditor_userid+"',auditor_username='"+auditor_username+"', audit_opinion='" + audit_opinion + "',handler_userid='"
+					+ handler_userid + "',handler_username='" + handler_username + "',scores=" + scores + ", addScore="
+					+ addScore + " ,commit_finish_date='" + commit_finish_date + "',is_excellent=" + is_excellent
+					+ ",is_difficult=" + is_difficult + "  WHERE rp_no ='" + rp_no + "' ;");
 
-			Db.update("update rational_proposal set audit_opinion='" + audit_opinion + "',handler_userid='"
-					+ handler_userid + "',handler_username='" + handler_username + "',scores=" + scores
-					+ ", addScore=" + addScore+ " ,commit_finish_date='" + commit_finish_date + "',is_excellent=" + is_excellent + ",is_difficult="
-					+ is_difficult + "  WHERE rp_no ='" + rp_no + "' ;");
-
-			Db.update("update rational_proposal set is_checked=1,audit_result=1,approve_date='" + date
+			Db.update("update rational_proposal set is_checked="+is_checked+",audit_result="+is_checked+",approve_date='" + date
 					+ "' WHERE rp_no ='" + rp_no + "'");
 
 			resp.set("code", 200);
@@ -162,17 +180,17 @@ public class AppCheckController extends Controller {
 
 	public void getHandleItem() {
 		Record resp = new Record();
-		
+
 //		RationalProposal rp = getModel(RationalProposal.class,"");
 //		Object Item =rp.findFirst("select * from rational_proposal WHERE rp_no='" + getPara("rp_no") + "'");
 //		resp.set("getCheckItem", Item);
-		
+
 		List<RationalProposal> Item = RationalProposal.dao
 				.find("select * from rational_proposal WHERE rp_no='" + get("rp_no") + "'");
 		try {
 			String s = Item.get(0).get("picture_of_problem");
 			String[] str_pic = null;
-			//将储存图片名称的字符串转换为数组以便前台使用
+			// 将储存图片名称的字符串转换为数组以便前台使用
 			if (s != null) {
 				String[] str = s.split(";");
 				str_pic = new String[str.length];
@@ -192,13 +210,15 @@ public class AppCheckController extends Controller {
 		resp.set("code", 200);
 		renderJson(resp);
 	}
+
 	// 20200118 新增中止建议方法
 	public void toSuspend() {
 		Record resp = new Record();
 		RationalProposal qp = getModel(RationalProposal.class, "");
 		String no = qp.getRpNo();
 		String comment = qp.getComment();
-		Db.update("update rational_proposal set audit_result = 0 ,handle_result = 0,comment = '"+comment+"' WHERE rp_no ='" + no + "' ;");
+		Db.update("update rational_proposal set audit_result = 0 ,handle_result = 0,comment = '" + comment
+				+ "' WHERE rp_no ='" + no + "' ;");
 		resp.set("code", 200);
 		renderJson(resp);
 	}
@@ -355,7 +375,6 @@ public class AppCheckController extends Controller {
 		List<RationalProposal> Item = RationalProposal.dao
 				.find("select * from rational_proposal WHERE rp_no='" + no + "'");
 
-
 		Record resp = new Record();
 		// 获取问题图片
 		try {
@@ -447,22 +466,22 @@ public class AppCheckController extends Controller {
 	public void getPrizeList() {
 		List<RpPrizeList> PrizeList = RpPrizeList.dao.find("select * from rp_prize_list order by cost_score ");
 		Record resp = new Record();
-		
-		//获取总分
+
+		// 获取总分
 		String userid = getPara("userid");
-		List<RationalProposal> total_score = RationalProposal.dao
-				.find("select ifnull(SUM(scores+addScore),0) total from rational_proposal WHERE audit_result <> 0 and find_userid = '" + userid
-						+ "'");
+		List<RationalProposal> total_score = RationalProposal.dao.find(
+				"select ifnull(SUM(scores+addScore),0) total from rational_proposal WHERE audit_result <> 0 and find_userid = '"
+						+ userid + "'");
 		Object totalScore = total_score.get(0).get("total");
 		int total = Integer.parseInt(String.valueOf(totalScore));
-		
-		//获取已使用的分数
-		List<RpPrizeExchangeList> used_score = RpPrizeExchangeList.dao
-				.find("select ifnull(SUM(score),0) total from rp_prize_exchange_list WHERE apply_userid = '" + userid + "'");
-					
+
+		// 获取已使用的分数
+		List<RpPrizeExchangeList> used_score = RpPrizeExchangeList.dao.find(
+				"select ifnull(SUM(score),0) total from rp_prize_exchange_list WHERE apply_userid = '" + userid + "'");
+
 		Object usedScore = used_score.get(0).get("total");
 		int used = Integer.parseInt(String.valueOf(usedScore)) | 0;
-		
+
 		resp.set("PrizeList", PrizeList);
 		resp.set("totalScore", total);
 		resp.set("usedScore", used);
@@ -472,9 +491,9 @@ public class AppCheckController extends Controller {
 	}
 
 	public void toExchangePrize() throws Exception {
-		RpPrizeExchangeList rp = getModel(RpPrizeExchangeList.class,"");
+		RpPrizeExchangeList rp = getModel(RpPrizeExchangeList.class, "");
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		
+
 		rp.set("apply_date", sdf.format(new Date()));
 		rp.save();
 		Record resp = new Record();
@@ -551,10 +570,14 @@ public class AppCheckController extends Controller {
 	public void getDoubleAuditList() {
 		Record resp = new Record();
 		List<RationalProposal> DoubleAuditList = RationalProposal.dao.find(
-				"select * from rational_proposal where is_checked=1 And audit_result=1 and (is_excellent+is_difficult>0) and desc_aft_db_audit is NULL order by create_time desc ");
-		List<User> userlist = User.dao.find(
-				"select ding_user_id from user where username ='admin' or username = 'manager'");
-		resp.set("userlist",userlist);
+				"select * from rational_proposal where is_checked=1 And audit_result=1 and (is_excellent+is_difficult>=1) and desc_aft_db_audit is NULL order by create_time desc ");
+		
+		
+		
+		String sql2 = "SELECT * FROM `user` WHERE id IN (" + 
+				"SELECT user_id FROM user_role WHERE role_id = 2)";
+		List<User> leanManagerList = User.dao.find(sql2);
+		resp.set("leanManagerList", leanManagerList);
 		resp.set("DoubleAuditList", DoubleAuditList);
 		resp.set("code", 200);
 		renderJson(resp);
@@ -566,30 +589,8 @@ public class AppCheckController extends Controller {
 		Record resp = new Record();
 		try {
 			RationalProposal qp = getModel(RationalProposal.class, "");
-			qp.save();
-//			String no = qp.getRpNo();
-//			String handler_userid = qp.getHandlerUserid();
-//			String handler_username = qp.getHandlerUsername();
-//			Integer is_excellent_aft_ck = qp.getIsExcellentAftCk();
-//			Integer is_difficult_aft_ck = qp.getIsDifficultAftCk();
-//			String desc = qp.getDescAftDbAudit();
-//
-//			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-//			String date = sdf.format(new Date());
-//
-//			String sql = "update rational_proposal set desc_aft_db_audit='" + desc + "' , handler_userid='" + handler_userid + "' , handler_username='" + handler_username + "'";
-//			if ((is_excellent_aft_ck) == 1) {
-//				sql += " ,is_excellent_aft_ck=1 ";
-//			} else {
-//				sql += " ,is_excellent_aft_ck=0 ";
-//			}
-//			if ((is_difficult_aft_ck) == 1) {
-//				sql += " ,is_difficult_aft_ck=1 ";
-//			} else {
-//				sql += " ,is_difficult_aft_ck=0 ";
-//			}
-//			sql += " WHERE rp_no ='" + no + "'";
-//			Db.update(sql);
+			qp.update();
+
 
 			resp.set("code", 200);
 		} catch (Exception e) {
@@ -610,14 +611,22 @@ public class AppCheckController extends Controller {
 	}
 
 	public void getCommunityDataList() {
-		String sql1 = "(SELECT *,SUM(isLike) AS sumlike,GROUP_CONCAT(userid) AS likeuserid FROM rational_proposal r LEFT JOIN rp_like l ON r.rp_no=l.`rp_num` WHERE is_checked=1 AND audit_result=1 GROUP BY r.`rp_no`) AS liketable";
+		Integer pageSize = getInt("pageSize");
+		Integer pageNum = getInt("pageNum");
+		String sql1 = "(SELECT *,SUM(isLike) AS sumlike,GROUP_CONCAT(userid) AS likeuserid "
+				+ "FROM rational_proposal r LEFT JOIN rp_like l ON r.rp_no=l.`rp_num` "
+				+ "WHERE is_checked=1 AND audit_result=1 GROUP BY r.`rp_no`) AS liketable";
 //		String y = "\"";
 //		String s = " '["+y+"',l.`id`,'"+y+",','"+y+"',l.`comment_userid`,'"+y+",','"+y+"',l.`comment_username`,'"+y+",','"+y+"',l.`comment_content`,'"+y+"]'";
 //		String sql2 = "(SELECT r.rp_no,l.`comment_userid`,l.`comment_username`,GROUP_CONCAT(CONCAT("+s+")) AS newcontent,l.`isComment`,COUNT(isComment) AS sumcomment,GROUP_CONCAT(comment_userid) AS comment_userids FROM rational_proposal r LEFT JOIN rp_comment l ON r.rp_no=l.`rp_numb` WHERE is_checked=1 AND audit_result=1 GROUP BY r.`rp_no` ) AS commenttable";
-		String sql2 = "(SELECT r.rp_no,l.`comment_userid`,l.`comment_username`,GROUP_CONCAT(CONCAT(l.`id`,'$^$',l.`comment_userid`,'$^$',l.`comment_username`,'$^$',l.`comment_content`,'*&^')) AS newcontent,l.`isComment`,COUNT(isComment) AS sumcomment,GROUP_CONCAT(comment_userid) AS comment_userids FROM rational_proposal r LEFT JOIN rp_comment l ON r.rp_no=l.`rp_numb` WHERE is_checked=1 AND audit_result=1 GROUP BY r.`rp_no` ) AS commenttable";
+		String sql2 = "(SELECT r.rp_no,l.`comment_userid`,l.`comment_username`,"
+				+ "GROUP_CONCAT(CONCAT(l.`id`,'$^$',l.`comment_userid`,'$^$',l.`comment_username`,'$^$',l.`comment_content`,'*&^')) "
+				+ "AS newcontent,l.`isComment`,COUNT(isComment) AS sumcomment,GROUP_CONCAT(comment_userid) "
+				+ "AS comment_userids FROM rational_proposal r LEFT JOIN rp_comment l ON r.rp_no=l.`rp_numb` "
+				+ "WHERE is_checked=1 AND audit_result=1 GROUP BY r.`rp_no` ) AS commenttable";
 
 		String sql = "SELECT * FROM " + sql1 + " left join " + sql2
-				+ " ON liketable.rp_no=commenttable.rp_no ORDER BY liketable.`rp_no` DESC";
+				+ " ON liketable.rp_no=commenttable.rp_no ORDER BY liketable.`rp_no` DESC LIMIT "+((pageNum-1)*pageSize)+","+pageSize+"";
 		List<RationalProposal> CommunityDataList = RationalProposal.dao.find(sql);
 		Record resp = new Record();
 		resp.set("CommunityDataList", CommunityDataList);
@@ -649,34 +658,35 @@ public class AppCheckController extends Controller {
 		String commentuserid = getPara("commentuserid");
 		String commentusername = getPara("commentusername");
 		String comment_content = getPara("comment_content");
-		
+
 		Record resp = new Record();
 
 		if (rp_num != null && commentuserid != null) {
-			String sql = "INSERT INTO rp_comment (rp_numb,comment_userid,comment_username,comment_content,isComment) Values ('" + rp_num + "','" + commentuserid + "','" + commentusername + "','" + comment_content + "',1)";
+			String sql = "INSERT INTO rp_comment (rp_numb,comment_userid,comment_username,comment_content,isComment) Values ('"
+					+ rp_num + "','" + commentuserid + "','" + commentusername + "','" + comment_content + "',1)";
 			Db.update(sql);
 			List<Record> maxId = Db.find("select * from rp_comment");
-			String id = maxId.get(maxId.size()-1).getStr("id");
+			String id = maxId.get(maxId.size() - 1).getStr("id");
 //			System.out.println(id);
 			resp.set("code", 200);
 			resp.set("maxId", id);
-			
+
 		} else {
 			resp.set("code", 0);
 		}
 		renderJson(resp);
 
 	}
-	
+
 	public void deleteComment() {
 
 		String id = getPara("id");
-		
+
 		Record resp = new Record();
 //		System.out.println("id item is");
 //		System.out.println(id);
-		if (id != null ) {
-			Record deleteItem =Db.findById("rp_comment", id);
+		if (id != null) {
+			Record deleteItem = Db.findById("rp_comment", id);
 //			System.out.println("delete item is");
 //			System.out.println(deleteItem);
 			String rpnum = deleteItem.getStr("rp_numb");
@@ -688,6 +698,160 @@ public class AppCheckController extends Controller {
 		}
 		renderJson(resp);
 
+	}
+
+	public void getMonthKpi() throws ParseException {
+		Record record = new Record();
+		String[] selectDates = get("checkDate").split("-");
+		int curMonth = Integer.parseInt(selectDates[1]);
+		int year = Integer.parseInt(selectDates[0]);
+		// 获取所选月的天数
+		DateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
+		Date date = fmt.parse(get("checkDate") + "-01");
+		int day_qty = Commen.getDaysOfMonth(date);
+		// 获取每个车间的月度数据
+		String sql1 = "SELECT year_t1.id AS id,year_t1.pid AS pid,  " + 
+				"IFNULL(year_t1.`month_total`,0) AS month_total,  " + 
+				"IFNULL(year_t1.`month_accept`,0) AS month_accept,  " + 
+				"IFNULL(year_t1.`month_checked`,0) AS month_checked,  " + 
+				"IFNULL(year_t1.`month_unclosed`,0) AS month_unclosed,  " + 
+				"IFNULL(year_t2.`month_closed`,0) AS month_closed,  " + 
+				"IFNULL(year_t2.`year_total_accept`,0) AS year_total_accept, " + 
+				"year_t1.`productionLine` AS productionLine, " + 
+				"year_t1.`staff_qty` AS staff_qty,  " + 
+				"year_t1.`workshop` AS w2   " + 
+				"FROM(SELECT * FROM(SELECT * FROM(SELECT * FROM " + 
+				"(SELECT * FROM rp_line_structure WHERE pid<10 AND id>6 AND pid<>6) AS rp LEFT JOIN  			 " + 
+				" (SELECT * FROM ( " + 
+				"SELECT create_time,COUNT(*) AS month_total,workshop " + 
+				"FROM rational_proposal  WHERE create_time >= '"+year+"-"+curMonth+"-01' AND create_time <= '" + get("checkDate") + "-" + day_qty + "' GROUP BY  workshop) tt " + 
+				"LEFT JOIN (SELECT create_time AS c,SUM(audit_result) AS month_accept,SUM(is_checked) AS month_checked,workshop ww2 " + 
+				"FROM rational_proposal  WHERE create_time >= '"+year+"-"+curMonth+"-01' AND create_time <= '" + get("checkDate") + "-" + day_qty + "' AND approve_date <= '" + get("checkDate") + "-" + day_qty + "' GROUP BY  ww2	) tt2 " + 
+				"ON tt.workshop = tt2.ww2 )AS rmonth  	ON rmonth.`workshop` = rp.`productionLine`) rp_monthly  		 " + 
+				"LEFT JOIN (SELECT IFNULL((COUNT(*)),0) AS month_unclosed ,workshop  w  " + 
+				"FROM rational_proposal  WHERE create_time >= '"+year+"-01-01' AND create_time <= '" + get("checkDate") + "-" + day_qty + "'  " + 
+				"AND audit_result='1' AND (handle_date IS NULL OR handle_date> '" + get("checkDate") + "-" + day_qty + "') GROUP BY  w ) AS ryear " + 
+				" ON ryear.`w` = rp_monthly.`productionLine` ) rp_yearly LEFT JOIN " + 
+				"  (SELECT staff_qty,workshop_id FROM rp_staff_qty WHERE moth_date>= '" + get("checkDate") + "-01' AND moth_date <=  '" + get("checkDate") + "-" + day_qty + "' ) s " + 
+				"  ON rp_yearly.`id` = s.`workshop_id` ORDER BY rp_yearly.`id`) year_t1  " + 
+				"  LEFT JOIN ( SELECT year_total.month_closed AS month_closed, year_total.w1 AS w1 ,year_total_ac.year_total_accept AS year_total_accept " + 
+				"  FROM (SELECT IFNULL((COUNT(*)),0) AS month_closed, workshop  w1 FROM rational_proposal " + 
+				"  WHERE create_time >= '"+year+"-01-01' AND create_time <= '" + get("checkDate") + "-" + day_qty + "' AND  handle_date <= '" + get("checkDate") + "-" + day_qty + "' GROUP BY  w1) year_total " + 
+				"LEFT JOIN (SELECT  IFNULL((COUNT(*)),0) AS year_total_accept ,workshop  w2  FROM rational_proposal  " + 
+				" WHERE create_time >= '"+year+"-01-01' AND create_time <= '" + get("checkDate") + "-" + day_qty + "' AND audit_result = '1' AND approve_date <= '" + get("checkDate") + "-" + day_qty + "'  GROUP BY  w2) year_total_ac " + 
+				"ON year_total.w1 = year_total_ac.w2) year_t2 ON year_t1.productionLine = year_t2.w1 " + 
+				"";
+//		String sql = "SELECT year_t1.id AS id,year_t1.pid AS pid, " + 
+//				"IFNULL(year_t1.`month_total`,0) AS month_total, " + 
+//				"IFNULL(year_t1.`month_accept`,0) AS month_accept, " + 
+//				"IFNULL(year_t1.`month_checked`,0) AS month_checked, " + 
+//				"IFNULL(year_t1.`year_total`,0) AS year_total, " + 
+//				"IFNULL(year_t2.`year_total_closed`,0) AS year_total_closed, " + 
+//				"IFNULL(year_t2.`year_total_accept`,0) AS year_total_accept,year_t1.`productionLine` productionLine, year_t1.`staff_qty` staff_qty, year_t1.`workshop` w2  " + 
+//				"FROM(SELECT * FROM  " + 
+//				"	(SELECT * FROM  " + 
+//				"		(SELECT * FROM " + 
+//				"			(SELECT * FROM rp_line_structure WHERE pid<10 AND id>6 AND pid<>6) AS rp  " + 
+//				"			LEFT JOIN  " + 
+//				"			(SELECT create_time,COUNT(*) AS month_total,SUM(audit_result) AS month_accept,SUM(is_checked) AS month_checked,workshop  " + 
+//				"			FROM rational_proposal  WHERE create_time >= '"+year+"-"+curMonth+"-01' AND create_time <= '" + get("checkDate") + "-" + day_qty + "' GROUP BY  workshop )AS rmonth  " + 
+//				"			ON rmonth.`workshop` = rp.`productionLine`) rp_monthly  " + 
+//				"		LEFT JOIN  " + 
+//				"		(SELECT COUNT(*) AS year_total,workshop  w  " + 
+//				"		FROM rational_proposal  WHERE create_time >= '"+year+"-01-01' AND create_time <= '" + get("checkDate") + "-" + day_qty + "' AND is_checked = '1' GROUP BY  w ) AS ryear  " + 
+//				"		ON ryear.`w` = rp_monthly.`productionLine` ) rp_yearly  " + 
+//				"	LEFT JOIN  " + 
+//				"	(SELECT staff_qty,workshop_id FROM rp_staff_qty WHERE moth_date>= '"+year+"-"+curMonth+"-01' AND moth_date <=  '" + get("checkDate") + "-" + day_qty + "' ) s  " + 
+//				"	ON rp_yearly.`id` = s.`workshop_id` ORDER BY rp_yearly.`id`) year_t1 " + 
+//				"LEFT JOIN ( " + 
+//				"	SELECT year_total.year_total_closed year_total_closed, year_total.w1 w1 ,year_total_ac.year_total_accept year_total_accept  " + 
+//				"	FROM (SELECT SUM(handle_result) AS year_total_closed, workshop  w1 FROM rational_proposal   " + 
+//				"		WHERE create_time >= '"+year+"-01-01' AND create_time <= '" + get("checkDate") + "-" + day_qty + "' AND is_checked = '1' AND actural_finish_date <= '" + get("checkDate") + "-" + day_qty + "' " + 
+//				"		GROUP BY  w1) year_total  " + 
+//				"	LEFT JOIN  " + 
+//				"		(SELECT  SUM(audit_result) AS year_total_accept ,workshop  w2  " + 
+//				"		FROM rational_proposal   " + 
+//				"		WHERE create_time >= '"+year+"-01-01' AND create_time <= '" + get("checkDate") + "-" + day_qty + "' AND is_checked = '1' AND approve_date <= '" + get("checkDate") + "-" + day_qty + "' " + 
+//				"		GROUP BY  w2) year_total_ac " + 
+//				"	ON year_total.w1 = year_total_ac.w2) year_t2 " + 
+//				"ON year_t1.productionLine = year_t2.w1";
+		List<Record> monthyList = Db.find(sql1);
+		
+		SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd");
+		Date cur_date = new Date(System.currentTimeMillis());
+		String today = formatter.format(cur_date);
+		//获取年度数据
+//		String sqlyear = "SELECT rp_yearly.id AS id,rp_yearly.pid AS pid,IFNULL(rp_yearly.`year_total`,0) AS year_total,IFNULL(rp_yearly.`year_total_checked`,0) AS year_total_checked, " + 
+//				"IFNULL(rp_yearly.`year_total_closed`,0) AS year_total_closed,IFNULL(rp_yearly.`year_total_accept`,0) AS year_total_accept, " + 
+//				"rp_yearly.`productionLine` productionLine, s.`staff_qty` year_total_staff_qty FROM  " + 
+//				"(SELECT * FROM(SELECT * FROM rp_line_structure WHERE pid<10 AND id>6 AND pid<>6)  AS rp LEFT JOIN  " + 
+//				"(SELECT COUNT(*) AS year_total,SUM(handle_result) AS year_total_closed, SUM(audit_result) AS year_total_accept , SUM(is_checked) as year_total_checked , workshop  w  " + 
+//				"FROM rational_proposal  WHERE create_time >= '"+year+"-01-01' AND create_time <= '" + today + "' GROUP BY  w ) AS ryear  " + 
+//				"ON ryear.`w` = rp.`productionLine` ) rp_yearly  " + 
+//				"LEFT JOIN (SELECT workshop_id,IFNULL(SUM(staff_qty),0) AS staff_qty FROM rp_staff_qty WHERE moth_date>= '"+year+"-01-01' AND moth_date <= '" + today + "'  " + 
+//				"GROUP BY workshop_id) s  ON rp_yearly.`id` = s.`workshop_id` ORDER BY rp_yearly.`id`";
+		String sqlyear = "SELECT year_t1.id AS id,year_t1.pid AS pid, " + 
+				"IFNULL(year_t1.`year_total`,0) AS year_total, " + 
+				"IFNULL(year_t2.`year_total_checked`,0) AS year_total_checked, " + 
+				"IFNULL(year_t2.`year_total_closed`,0) AS year_total_closed, " + 
+				"IFNULL(year_t2.`year_total_accept`,0) AS year_total_accept, " + 
+				"year_t1.`productionLine` productionLine, year_t1.`staff_qty` year_total_staff_qty  FROM " + 
+				"(SELECT * FROM (SELECT * FROM " + 
+				"(SELECT * FROM rp_line_structure WHERE pid<10 AND id>6 AND pid<>6)  AS rp LEFT JOIN  " + 
+				"(SELECT COUNT(*) AS year_total, workshop  w  " + 
+				"FROM rational_proposal  WHERE create_time >= '"+year+"-01-01' AND create_time <= '"+year+"-12-31' GROUP BY  w ) AS ryear  " + 
+				"ON ryear.`w` = rp.`productionLine` ) rp_yearly  " + 
+				"LEFT JOIN  " + 
+				"(SELECT workshop_id,IFNULL(SUM(staff_qty),0) AS staff_qty FROM rp_staff_qty WHERE moth_date>= '"+year+"-01-01' AND moth_date <= '"+year+"-12-31'  " + 
+				"GROUP BY workshop_id) s   " + 
+				"ON rp_yearly.`id` = s.`workshop_id`  " + 
+				"ORDER BY rp_yearly.`id` " + 
+				") year_t1 " + 
+				"LEFT JOIN ( " + 
+				"	SELECT year_total.year_total_closed year_total_closed, year_total.w1 w1 ,year_total_ac.year_total_accept year_total_accept,year_total_ac.year_total_checked year_total_checked  " + 
+				"	FROM (SELECT SUM(handle_result) AS year_total_closed, workshop  w1 FROM rational_proposal   " + 
+				"		WHERE create_time >= '"+year+"-01-01' AND create_time <= '"+year+"-12-31' AND audit_result = '1' AND  handle_date <= '"+year+"-12-31' " + 
+				"		GROUP BY  w1) year_total  " + 
+				"	LEFT JOIN  " + 
+				"		(SELECT  SUM(audit_result) AS year_total_accept ,SUM(is_checked) AS year_total_checked ,workshop  w2  " + 
+				"		FROM rational_proposal   " + 
+				"		WHERE create_time >= '"+year+"-01-01' AND create_time <= '"+year+"-12-31' AND is_checked = '1' AND approve_date <= '"+year+"-12-31' "+ 
+				"		GROUP BY  w2) year_total_ac " + 
+				"	ON year_total.w1 = year_total_ac.w2) year_t2 " + 
+				"ON year_t1.productionLine = year_t2.w1";
+		List<Record> yearlyList = Db.find(sqlyear);
+
+		// 获取事业部的名单，事业部的各月数据由前端各车间数据按事业部相加得到
+		String sql_departs = "select * from rp_line_structure WHERE id<10 and id <>6 order by id ";
+		List<Record> monthyDepartsList = Db.find(sql_departs);
+		
+		record.set("monthyDepartsList", monthyDepartsList);
+		record.set("monthyList", monthyList);
+		record.set("yearlyList", yearlyList);
+		renderJson(record);
+	}
+	
+	public void getWorkshopData(){
+		Record record = new Record();
+		List<RpLineStructure> total = RpLineStructure.dao.find("select * from rp_line_structure where pid<10 and pid > 0 and id <>6 and pid<>6 ");
+		record.set("total",total);
+		renderJson(record);
+	}
+
+	public void saveStaffQty(){
+		RpStaffQty s6sStaffQty = getModel(RpStaffQty.class,"");
+
+		s6sStaffQty.save();
+		Record record = new Record();
+		record.set("status",200);
+		renderJson(record);
+	}
+	public void getKPITargetByYear() {
+		List<Record> kpiList = Db.find("select * from rp_kpi_target where year = '"+get("year")+"';");
+		Record record = new Record();
+		record.set("status",200);
+		record.set("kpiList", kpiList);
+		renderJson(record);
 	}
 
 }

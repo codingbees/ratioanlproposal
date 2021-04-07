@@ -229,6 +229,17 @@ Table: rp_improve_type
  type  | VARCHAR(128) | YES  |     |         |         
 -------+--------------+------+-----+---------+---------
 
+Table: rp_kpi_target
+--------------------------+-----------+------+-----+---------+---------
+ Field                    | Type      | Null | Key | Default | Remarks 
+--------------------------+-----------+------+-----+---------+---------
+ id                       | INT(10)   | NO   | PRI |         |         
+ yearly_close_rate_target | FLOAT(12) | YES  |     |         | 年关闭率    
+ check_rate_target        | FLOAT(12) | YES  |     |         | 审核率     
+ average_target           | FLOAT(12) | YES  |     |         | 人均      
+ year                     | INT(10)   | YES  |     |         | 年度      
+--------------------------+-----------+------+-----+---------+---------
+
 Table: rp_like
 -------------+--------------+------+-----+-------------------+---------
  Field       | Type         | Null | Key | Default           | Remarks 
@@ -285,6 +296,18 @@ Table: rp_shift_leader
  workshop            | VARCHAR(128) | YES  |     |         | 车间      
  department          | VARCHAR(128) | YES  |     |         | 部门      
 ---------------------+--------------+------+-----+---------+---------
+
+Table: rp_staff_qty
+-------------+--------------+------+-----+---------+---------
+ Field       | Type         | Null | Key | Default | Remarks 
+-------------+--------------+------+-----+---------+---------
+ id          | INT(10)      | NO   | PRI |         | 序号      
+ workshop    | VARCHAR(255) | YES  |     |         | 区域名称    
+ workshop_id | INT(10)      | YES  |     |         | 区域id    
+ principal   | VARCHAR(255) | YES  |     |         | 负责人     
+ moth_date   | DATE(10)     | YES  |     |         | 日期      
+ staff_qty   | INT(10)      | YES  |     |         | 员工数量    
+-------------+--------------+------+-----+---------+---------
 
 Table: serial_number
 --------------------+---------+------+-----+---------+---------

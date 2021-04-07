@@ -29,11 +29,13 @@ public class _MappingKit {
 		arp.addMapping("roles", "id", Roles.class);
 		arp.addMapping("rp_comment", "id", RpComment.class);
 		arp.addMapping("rp_improve_type", "id", RpImproveType.class);
+		arp.addMapping("rp_kpi_target", "id", RpKpiTarget.class);
 		arp.addMapping("rp_like", "no", RpLike.class);
 		arp.addMapping("rp_line_structure", "id", RpLineStructure.class);
 		arp.addMapping("rp_prize_exchange_list", "id", RpPrizeExchangeList.class);
 		arp.addMapping("rp_prize_list", "id", RpPrizeList.class);
 		arp.addMapping("rp_shift_leader", "id", RpShiftLeader.class);
+		arp.addMapping("rp_staff_qty", "id", RpStaffQty.class);
 		arp.addMapping("serial_number", "id", SerialNumber.class);
 		arp.addMapping("user", "id", User.class);
 		arp.addMapping("user_role", "id", UserRole.class);
