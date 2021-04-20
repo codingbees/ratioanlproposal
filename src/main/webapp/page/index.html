@@ -18,6 +18,9 @@
   <script type="text/javascript">
   var _config = #(getConfig(request))
 
+
+
+
   dd.config({
       agentId: _config.agentid, // 必填，微应用ID
       corpId: _config.corpId,//必填，企业ID
@@ -38,6 +41,7 @@
   		'biz.customContact.choose'
   	]
   })
+
 
   dd.error(function(err) {
       console.log('dd error: ' + JSON.stringify(err));
@@ -254,7 +258,7 @@
 	    		method:"post",
 	    		url:"/menus",
 	  		}).then((res)=>{
-		  		console.log(res);
+		  		// console.log(res);
 			    	if(res.status==200){
 				    	if(res.data.state=="ok"){
 				    		_this.menus = res.data.menus;

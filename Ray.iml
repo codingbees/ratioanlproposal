@@ -72,7 +72,7 @@
     <orderEntry type="library" name="Maven: org.apache.shiro:shiro-event:1.4.0" level="project" />
     <orderEntry type="library" name="Maven: commons-logging:commons-logging:1.1.1" level="project" />
     <orderEntry type="library" name="Maven: com.jfinal-shiro:ray-jfinal-shiro:1.0.0" level="project" />
-    <orderEntry type="library" name="Maven: com.taobao:Dingtalk:1.0.0" level="project" />
+    <orderEntry type="library" name="Maven: com.taobao:Dingtalk:2.0.0" level="project" />
     <orderEntry type="library" name="Maven: com.alibaba:fastjson:1.2.49" level="project" />
     <orderEntry type="library" name="Maven: com.google.zxing:core:3.3.3" level="project" />
     <orderEntry type="library" name="Maven: com.google.zxing:javase:3.3.3" level="project" />
@@ -91,5 +91,6 @@
     <orderEntry type="library" name="Maven: org.freemarker:freemarker:2.3.30" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:1.2.3" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.2.3" level="project" />
+    <orderEntry type="library" name="Maven: com.dingtalk.api:top-api-sdk-dev:ding-open-mc-SNAPSHOT" level="project" />
   </component>
 </module>

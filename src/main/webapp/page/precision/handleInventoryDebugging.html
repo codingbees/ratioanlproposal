@@ -6,8 +6,8 @@
     <script src="../../layuiadmin/main.js"></script>
     <style type="text/css">
         .nav {
-            min-width: 900px;
-            width: 95%;
+            min-width: 300px;
+            width: 90%;
             margin: 0 auto;
         }
 
@@ -33,7 +33,7 @@
         }
 
         .nav_content_text, .el-textarea__inner {
-            height: 80vh;
+            height: 60vh;
             width: 95%;
             margin: 10px auto;
         }
@@ -45,7 +45,7 @@
         }
 
         .right-col {
-            height: 90vh;
+            height: 60vh;
             display: flex;
             flex-direction: column;
             justify-content: space-around;
@@ -64,13 +64,15 @@
             width: 100%;
         }
 
-        .tips{
+        .tips {
             font-size: 20px;
             font-weight: bold;
         }
-        .tips-num{
+
+        .tips-num {
             color: blue;
         }
+
         /*.middle_btn {*/
         /*    display: flex;*/
         /*    justify-content: center;*/
@@ -90,13 +92,16 @@
             </el-row>
             <el-input
                     class="nav_content_text"
-                    maxlength="500"
-                    placeholder="请输入二维码，例如 '14-110010401F3' "
+                    placeholder="请输入二维码，例如 'FL10.0004.01-20210001' "
                     show-word-limit
                     type="textarea"
                     v-model="QRList"
+                    @blur="handleblur"
             >
             </el-input>
+            <el-row class="tips" style="padding: 15px" v-show="part_name">
+                产品名称: <span class="tips-num">{{part_name}}</span>
+            </el-row>
         </el-col>
         <el-col :span="6" class="right-col" v-if="currentIndex===0">
             <el-row class="tips">
@@ -104,63 +109,46 @@
                 <div>已成功增加：<span class="tips-num">{{addSuccessQty}}&nbsp;</span>条</div>
             </el-row>
             <el-row>
-                <el-button type="primary">选择缺陷种类</el-button>
+                <el-button type="primary">选择入库调试种类</el-button>
                 <el-cascader
-                        :options="options2"
+                        :options="operations"
                         :show-all-levels="false"
-                        @change="handleblur"
                         clearable
                         filterable
                         placeholder="输入关键字搜索"
                         size="medium"
                         width="80%"
-                        v-model="defect"
+                        @change="showOper"
+                        v-model="operation"
                 ></el-cascader>
             </el-row>
-            <el-row class="middle_btn">
-                <el-button @click="submitDefect" type="success"> 提交缺陷件</el-button>
-            </el-row>
-        </el-col>
-        <el-col :span="6" class="right-col" v-else-if="currentIndex===2">
-            <el-row class="tips">
-                <div>从{{firstRepairTime}}到现在</div>
-                <div>已成功提交返修完成数据：<span class="tips-num">{{updateRepairSuccessQty}}&nbsp;</span>条</div>
-            </el-row>
-            <el-row>
-                <el-dropdown @command="handleResultCommand" placement="bottom-start">
-                    <el-button type="primary" class="middle_btn">
-                        选择返修结果<i class="el-icon-arrow-down el-icon--right"></i>
-                    </el-button>
-                    <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item :command="index" :key="index"
-                                          v-for="(item,index) in resultList">
-                            {{item.result}}
-                        </el-dropdown-item>
-                    </el-dropdown-menu>
-                </el-dropdown>
-                <el-row style="font-size: 20px;font-weight: bold;text-align: center;width: 80%">
-                    {{resultList[curResultIndex].result}}
-                </el-row>
-            </el-row>
-            <el-row>
-                <el-button type="primary">
-                    更新后二维码
-                </el-button>
-                <el-input placeholder="输入位二维码" type="text" style="width: 80%" v-model="newQRCode">
-                </el-input>
-            </el-row>
-            <el-row class="middle_btn">
-                <el-button @click="submitRepair" type="success"> 提交返修结果</el-button>
-            </el-row>
 
+            <el-row class="middle_btn">
+                <el-button @click="submitDefect" type="success"> 提交调试件入库</el-button>
+            </el-row>
         </el-col>
+
         <el-col :span="6" class="right-col" v-else>
             <el-row class="tips">
                 <div>从{{firstDeliverTime}}到现在</div>
                 <div>已成功增加：<span class="tips-num">{{updateDeliverySuccessQty}}&nbsp;</span>条</div>
             </el-row>
+            <el-row>
+                <el-button type="primary">选择出库调试种类</el-button>
+                <el-cascader
+                        :options="operations"
+                        :show-all-levels="false"
+                        clearable
+                        filterable
+                        placeholder="输入关键字搜索"
+                        size="medium"
+                        width="80%"
+                        @change="showOper"
+                        v-model="operation"
+                ></el-cascader>
+            </el-row>
             <el-row class="middle_btn">
-                <el-button @click="submitDelivery" type="success"> 出库</el-button>
+                <el-button @click="submitDelivery" type="success"> 调试件出库</el-button>
             </el-row>
         </el-col>
 
@@ -195,18 +183,20 @@
     var vm = new Vue({
         el: '#app',
         data: {
+            part_name: '',
             firstDeliverTime: '',
             firstRepairTime: '',
             firstAddTime: '',
             updateRepairSuccessQty: 0,
             updateDeliverySuccessQty: 0,
             addSuccessQty: 0,
-            baseQrCodeLength: 14,
-            defect: [],
-            options2: [],
+            baseQrCodeLength: 21,
+            operation: [],
+            operations: [],
             row: {},
             rows: {},
             QRList: '',
+            panSize: 0,
             curResultIndex: 0,
             resultList: [{result: '不合格', index: 0}, {result: '合格', index: 1}],
             newQRCode: '',
@@ -217,9 +207,6 @@
             }, {
                 title: '出库',
                 id: 1
-            }, {
-                title: '返修结果',
-                id: 2
             }],
             userInfo: {
                 jobnumber: '',
@@ -229,34 +216,18 @@
         created() {
             this.userInfo.jobnumber = JSON.parse(localStorage.getItem("jobnumber"))
             this.userInfo.nickName = JSON.parse(localStorage.getItem("nickName"))
-            axios({
-                method: "get",
-                url: "/precision/getTypeList"
-            }).then(res => {
-                // console.log('res from getTypeList')
-                // console.log(res)
-                let [...newlist] = res.data.precisionType
-                let [...list] = res.data.precisionTypeCategory
-                let listWithChildren = list.map(item => {
-                    return {
-                        ...item,
-                        children: []
-                    }
-                })
-                for (let j = 0; j < listWithChildren.length; j++) {
-                    for (let i = 0; i < newlist.length; i++) {
-                        if (newlist[i].note === listWithChildren[j].label) {
-                            listWithChildren[j].children.push(newlist[i])
-                        }
-                    }
-                }
 
-                this.options2 = listWithChildren
-                this.defectList = res.data.precisionType
-            }).catch(err => {
-
-            })
         },
+        // computed:{
+        //    opt(){
+        //        let v = this.QRList.trim().split('-')[0]
+        //        let array = this.options2.filter(item =>{
+        //            return item.part_no === v
+        //        }).children
+        //        console.log(array)
+        //        return array
+        //    }
+        // },
         mounted() {
             window.parent.app.dialogHeight = document.documentElement.offsetHeight + "px";
             this.row = window.parent.app.dialogRow;
@@ -273,47 +244,69 @@
 
         },
         methods: {
-            handleblur() {
-                // console.log(this.defect[1])
+            showOper() {
+                // console.log(this.operation[0])
+            },
+            async handleblur() {
+                this.part_name = ''
+                this.operations = []
+                let res = await axios({
+                    method: "get",
+                    url: "/precision/getTypeListDebugging"
+                })
+                let [...precisionType] = res.data.precisionType
+                let [...precisionTypeCategory] = res.data.precisionTypeCategory
+                let listWithChildren = precisionTypeCategory.map(item => {
+                    return {
+                        ...item,
+                        children: []
+                    }
+                })
+                for (let j = 0; j < listWithChildren.length; j++) {
+                    for (let i = 0; i < precisionType.length; i++) {
+                        if (precisionType[i].part_no === listWithChildren[j].part_no) {
+                            listWithChildren[j].children.push(precisionType[i])
+                        }
+                    }
+                }
+
+                let v = this.QRList.trim().split('-')[0]
+                let arr = listWithChildren.filter(item => {
+                    return item.part_no === v
+                })[0]
+                if (arr) {
+                    this.part_name = arr.part_name
+                    this.operations = arr.children
+                }
+
             },
             handleUpdate(data) {
-
                 axios({
                     method: 'POST',
-                    url: '/precision/updateData',
+                    url: '/precision/updateDataDebugging',
                     params: data
                 }).then(res => {
                     if (res.data.code === 200) {
-                        // console.log(res)
-                        if (data.delivery_date) {
-
-                            this.updateDeliverySuccessQty++
-                        } else if (data.repair_finish_date) {
-
-                            this.updateRepairSuccessQty++
-                        }
+                        this.updateDeliverySuccessQty++
                         this.$message.success("二维码 \"" + res.data.qrcode + '\"更新操作成功')
-                    } else if (res.data.code === 0) {
-                        this.$message.error("二维码 \"" + res.data.qrcode + '\" 操作失败，二维码不存在')
-                    } else {
+                    }  else {
                         this.$message.error("二维码 \"" + res.data.qrcode + '\" 操作失败，' + res.data.message)
                     }
-                    // console.log(res)
+
                 }).catch(err => {
                     this.$message.error(err)
                 })
             },
             handleEntry(qrCode) {
-
-
+                // console.log(this.operation[0],'this.operation[0]')
                 axios({
                     method: 'POST',
-                    url: '/precision/addData',
+                    url: '/precision/addDataDebugging',
                     params: {
                         qrcode: qrCode,
-                        defect_type: this.defect[1],
+                        entry_operation: this.operation[0],
                         entry_date: new Date().format('yyyy-MM-dd hh:mm:ss'),
-                        entry_person: this.userInfo.nickName
+                        entry_person: this.userInfo.nickName,
                     }
                 }).then(res => {
                     if (res.data.code === 200) {
@@ -321,7 +314,7 @@
                         this.$message.success("二维码 \"" + res.data.qrcode + '\" 添加成功')
                     } else {
                         // console.log(res)
-                        this.$message.error("二维码 \"" + res.data.qrcode + '\" 添加失败，二维码已经存在')
+                        this.$message.error("二维码 \"" + res.data.qrcode + '\" '+res.data.message)
                     }
                 }).catch(err => {
                     this.$message.error(err)
@@ -341,69 +334,47 @@
                 return res;
             },
             submitDefect() {
-                if (this.QRList === '' || this.defect.length === 0) {
+                if (this.QRList === '' || this.operation.length === 0) {
                     this.$message.error("添加失败，请检查二维码和缺陷类型")
                     return
                 }
                 let newList = this.QRList.split('\n')
-                let newl = this.getUnique(newList)
-                newl.map(item => {
-                    if (item.length === this.baseQrCodeLength) {
-                        this.handleEntry(item)
-                    } else {
-                        // this.$message.error(''+item+' 二维码位数错误')
-                    }
-                })
 
-            },
-            submitDelivery() {
-                let newList = this.QRList.split('\n')
                 let newl = this.getUnique(newList)
-                newl.map(qrcode => {
-                    if (qrcode !== "") {
-                        let delivery_person = this.userInfo.nickName
-                        let delivery_date = new Date().format('yyyy-MM-dd hh:mm:ss')
-                        let obj = {
-                            qrcode: qrcode,
-                            delivery_date,
-                            delivery_person
-                        }
-                        if (qrcode.length === this.baseQrCodeLength) {
-                            this.handleUpdate(obj)
-                        } else {
-                            this.$message.error('' + qrcode + ' 二维码位数错误')
-                        }
-                    }
-                })
-            },
-            submitRepair() {
-                if (this.newQRCode && this.newQRCode.length !== this.baseQrCodeLength) {
-                    this.$message.error('更新后的二维码长度应该是' + this.baseQrCodeLength + '位')
-                    return
-                }
-                if (!this.QRList) {
-                    this.$message.error('请输入返修后的零件二维码')
-                    return
-                }
-                let newList = this.QRList.split('\n')
-                let newl = this.getUnique(newList)
+
                 newl.map(qrcode => {
                     if (qrcode.length === this.baseQrCodeLength) {
-                        let repair_result = this.curResultIndex
-                        let repair_finish_date = new Date().format('yyyy-MM-dd hh:mm:ss')
-                        let obj = {
-                            qrcode,
-                            repair_finish_date,
-                            repair_result,
-                            new_qrcode: this.newQRCode,
-                            repair_person : this.userInfo.nickName
-                        }
-                        this.handleUpdate(obj)
+                        this.handleEntry(qrcode)
                     } else {
                         this.$message.error('' + qrcode + ' 二维码位数错误')
                     }
                 })
+
+
             },
+            submitDelivery() {
+                if (this.QRList === '' || this.operation.length === 0) {
+                    this.$message.error("出库失败，请检查二维码和缺陷类型")
+                    return
+                }
+                let newList = this.QRList.split('\n')
+                let newl = this.getUnique(newList)
+                newl.map(qrcode => {
+                    let obj = {
+                        qrcode: qrcode,
+                        delivery_date: new Date().format('yyyy-MM-dd hh:mm:ss'),
+                        delivery_person: this.userInfo.nickName,
+                        delivery_operation: this.operation[0],
+                    }
+                    if (qrcode.length === this.baseQrCodeLength) {
+                        this.handleUpdate(obj)
+                    } else {
+                        this.$message.error('' + qrcode + ' 二维码位数错误')
+                    }
+
+                })
+            },
+
             handleResultCommand(command) {
                 this.curResultIndex = command
             },

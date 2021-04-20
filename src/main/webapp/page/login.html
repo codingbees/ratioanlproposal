@@ -85,7 +85,8 @@
    }
    window.onload=kickout();
 
-   window.onload = function () {  
+   window.onload = function () {
+
 	    if (window.parent.window != window) {  
 	        window.top.location = "/loginInit";
 	    };
@@ -148,7 +149,12 @@
 			    		url:"/login",
 			    		params:_this.form
 			  		}).then((res)=>{
+					  console.log("res from login")
 				  		console.log(res);
+					  localStorage.setItem("jobnumber",JSON.stringify(res.data.jobnumber))
+					  localStorage.setItem("nickName",JSON.stringify(res.data.nickName))
+					  // console.log("user from login")
+					  // console.log(#(user));
 				    	if(res.status==200){
 				    		if(res.data.state=="ok"){
 				    			this.$message({

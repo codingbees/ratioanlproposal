@@ -35,7 +35,12 @@ public class MainController extends BaseController{
 	}
 	public void index(){
 //		setAttr("menu", getMenu());
+		set("dingUserInfo",get("dingUserInfo"));
 		set("request",getRequest());
+		System.out.println("dingUserInfo");
+		System.out.println(get("dingUserInfo"));
+//		System.out.println("request");
+//		System.out.println(getRequest());
 		render("index.html");
 	}
 
@@ -43,10 +48,13 @@ public class MainController extends BaseController{
 		if(getPara("code")!=null){
 			setAttr("code", getPara("code"));
 			setAttr("icon", getPara("icon"));
+
 		}else{
 			setAttr("code", 0);
 			setAttr("icon", 1);
+
 		}
+		setAttr("user", 100);
 		render("login.html");
 	}
 	
@@ -59,7 +67,15 @@ public class MainController extends BaseController{
 			Record record = Db.findFirst("SELECT GROUP_CONCAT(role_name) AS roles FROM roles WHERE id IN (SELECT role_id FROM user_role WHERE user_id = '"+user.get("id")+"')");
 			user.set("roles", record.getStr("roles"));
 			subject.getSession().setAttribute("user", user);
-			renderJson(Ret.ok("msg", "登录成功"));
+			Record record1 = new Record();
+
+			record1.set("nickName",user.get("nickname"));
+			record1.set("jobnumber",user.get("job_number"));
+			record1.set("msg","登录成功");
+			record1.set("state","ok");
+			renderJson(record1);
+
+//			renderJson(Ret.ok("msg", "登录成功"));
 		} catch (IncorrectCredentialsException ice) {
 			renderJson(Ret.fail("msg", "密码错误"));
 		} catch (UnknownAccountException uae) {

@@ -146,6 +146,89 @@ Table: permissions
  gl_id           | INT(10)      | YES  |     |         | 关联菜单ID  
 -----------------+--------------+------+-----+---------+---------
 
+Table: precision_inventory
+--------------------+--------------+------+-----+---------+---------
+ Field              | Type         | Null | Key | Default | Remarks 
+--------------------+--------------+------+-----+---------+---------
+ id                 | INT(10)      | NO   | PRI |         |         
+ qrcode             | VARCHAR(30)  | YES  |     |         | 产品二维码   
+ defect_type        | VARCHAR(30)  | YES  |     |         | 缺陷类型    
+ part_name          | VARCHAR(20)  | YES  |     |         | 产品名称    
+ entry_date         | DATETIME(19) | YES  |     |         | 入库时间    
+ entry_person       | VARCHAR(20)  | YES  |     |         | 入库操作人   
+ delivery_date      | DATETIME(19) | YES  |     |         | 出库时间    
+ delivery_person    | VARCHAR(20)  | YES  |     |         | 出库负责人   
+ repair_person      | VARCHAR(20)  | YES  |     |         | 返修负责人   
+ repair_result      | INT(10)      | YES  |     |         | 返修结果：0=返修不合格，1=返修合格
+ repair_finish_date | DATETIME(19) | YES  |     |         | 返修完成时间  
+ new_qrcode         | VARCHAR(30)  | YES  |     |         | 新二维码    
+--------------------+--------------+------+-----+---------+---------
+
+Table: precision_inventory_commins
+----------------------+--------------+------+-----+---------+---------
+ Field                | Type         | Null | Key | Default | Remarks 
+----------------------+--------------+------+-----+---------+---------
+ id                   | INT(10)      | NO   | PRI |         | id      
+ qrcode               | VARCHAR(30)  | YES  |     |         | 产品二维码   
+ defect_type          | VARCHAR(30)  | YES  |     |         | 缺陷类型    
+ part_name            | VARCHAR(20)  | YES  |     |         | 产品名称    
+ entry_date           | DATETIME(19) | YES  |     |         | 入库时间    
+ entry_person         | VARCHAR(20)  | YES  |     |         | 入库操作人   
+ entry_qty            | INT(10)      | YES  |     |         | 入库数     
+ delivery_date        | DATETIME(19) | YES  |     |         | 出库时间    
+ delivery_person      | VARCHAR(20)  | YES  |     |         | 出库负责人   
+ delivery_qty         | INT(10)      | YES  |     |         | 出库数     
+ repair_person        | VARCHAR(20)  | YES  |     |         | 返修负责人   
+ repair_result        | INT(10)      | YES  |     |         | 返修结果：0=返修不合格，1=返修合格
+ repair_finish_date   | DATETIME(19) | YES  |     |         | 返修完成时间  
+ repair_qualified_qty | INT(10)      | YES  |     |         | 返修后合格数量 
+ new_qrcode           | VARCHAR(30)  | YES  |     |         | 新二维码    
+----------------------+--------------+------+-----+---------+---------
+
+Table: precision_inventory_debugging
+--------------------+--------------+------+-----+---------+---------
+ Field              | Type         | Null | Key | Default | Remarks 
+--------------------+--------------+------+-----+---------+---------
+ id                 | INT(10)      | NO   | PRI |         | id      
+ qrcode             | VARCHAR(30)  | YES  |     |         | 产品二维码   
+ part_name          | VARCHAR(40)  | YES  |     |         | 产品名称    
+ entry_date         | DATETIME(19) | YES  |     |         | 入库时间    
+ entry_person       | VARCHAR(20)  | YES  |     |         | 入库操作人   
+ entry_operation    | VARCHAR(128) | YES  |     |         | 入库工序    
+ delivery_operation | VARCHAR(128) | YES  |     |         | 出库工序    
+ delivery_date      | DATETIME(19) | YES  |     |         | 出库时间    
+ delivery_person    | VARCHAR(20)  | YES  |     |         | 出库负责人   
+--------------------+--------------+------+-----+---------+---------
+
+Table: precision_type
+-------+-------------+------+-----+---------+---------
+ Field | Type        | Null | Key | Default | Remarks 
+-------+-------------+------+-----+---------+---------
+ id    | INT(10)     | NO   | PRI |         | 序号      
+ type  | VARCHAR(20) | YES  |     |         | 类型      
+ note  | VARCHAR(30) | YES  |     |         | 备注      
+-------+-------------+------+-----+---------+---------
+
+Table: precision_type_commins
+---------+-------------+------+-----+---------+---------
+ Field   | Type        | Null | Key | Default | Remarks 
+---------+-------------+------+-----+---------+---------
+ id      | INT(10)     | NO   | PRI |         | 序号      
+ type    | VARCHAR(20) | YES  |     |         | 类型      
+ note    | VARCHAR(30) | YES  |     |         | 备注      
+ pansize | INT(10)     | YES  |     |         | 盒数量     
+---------+-------------+------+-----+---------+---------
+
+Table: precision_type_debugging
+------------+--------------+------+-----+---------+---------
+ Field      | Type         | Null | Key | Default | Remarks 
+------------+--------------+------+-----+---------+---------
+ id         | INT(10)      | NO   | PRI |         | 序号      
+ part_no    | VARCHAR(20)  | YES  |     |         | 产品序号    
+ part_name  | VARCHAR(30)  | YES  |     |         | 产品名称    
+ operations | VARCHAR(255) | YES  |     |         | 工序      
+------------+--------------+------+-----+---------+---------
+
 Table: rational_proposal
 ---------------------------+----------------------+------+-----+-------------------+---------
  Field                     | Type                 | Null | Key | Default           | Remarks 

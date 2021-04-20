@@ -24,6 +24,12 @@ public class _MappingKit {
 		arp.addMapping("file", "id", File.class);
 		arp.addMapping("menu", "id", Menu.class);
 		arp.addMapping("permissions", "id", Permissions.class);
+		arp.addMapping("precision_inventory", "id", PrecisionInventory.class);
+		arp.addMapping("precision_inventory_commins", "id", PrecisionInventoryCommins.class);
+		arp.addMapping("precision_inventory_debugging", "id", PrecisionInventoryDebugging.class);
+		arp.addMapping("precision_type", "id", PrecisionType.class);
+		arp.addMapping("precision_type_commins", "id", PrecisionTypeCommins.class);
+		arp.addMapping("precision_type_debugging", "id", PrecisionTypeDebugging.class);
 		arp.addMapping("rational_proposal", "id", RationalProposal.class);
 		arp.addMapping("role_permission", "id", RolePermission.class);
 		arp.addMapping("roles", "id", Roles.class);
