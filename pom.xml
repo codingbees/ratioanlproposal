@@ -197,7 +197,11 @@
 	
 <!--自选库-->
 
-
+	<dependency>
+         <groupId>com.dingtalk.api</groupId>
+         <artifactId>top-api-sdk-dev</artifactId>
+         <version>ding-open-mc-SNAPSHOT</version>
+     </dependency>
 	 <dependency>
 	    <groupId>com.jfinal</groupId>
 	    <artifactId>jfinal</artifactId>

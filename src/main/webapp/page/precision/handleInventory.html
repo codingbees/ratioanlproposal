@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Insert title here</title>
+    <script src="../../../layuiadmin/main.js"></script>
+</head>
+<body>
+<div id="app" >
+    <div class="nav">
+        <div class="nav_bar">
+            <span class="nav_item" v-for="item in btnList" :key="item.id" @click="changeIndex(item.id)">
+                {{item.title}}
+            </span>
+        </div>
+        <div class="nav_content">
+            <el-textarea v-model="qrList">
+
+            </el-textarea>
+        </div>
+    </div>
+
+    <el-button @click="submit" type="primary"> 提交</el-button>
+    <!--    <el-button @click="close()">提交</el-button>-->
+    <template>
+        <el-table :data="districtList" style="width: 100%">
+            <el-table-column
+                    align="center" label="车间id" prop="id" width="80"></el-table-column>
+            <el-table-column
+                    align="center" label="区域名称" prop="productionLine" width="220"></el-table-column>
+            <!--<el-table-column prop="leader_name" label="负责人" width="100" align="center"> </el-table-column>   -->
+            <el-table-column align="center" label="日期" width="180">
+                <template slot-scope="scope">
+                    <el-date-picker placeholder="选择日期" style="width: 150px" type="date"
+                                    v-model="scope.row.moth_date"></el-date-picker>
+                    <!-- <input style="width: 90px" :value="scope.row.moth_date" />-->
+                </template>
+            </el-table-column>
+            <el-table-column align="center" label="当月人数" width="180">
+                <template
+                        slot-scope="scope">
+                    <el-input style="width: 120px"
+                              v-model="scope.row.staff_qty"></el-input>
+
+                </template>
+            </el-table-column>
+        </el-table>
+    </template>
+</div>
+<script>
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            row: {},
+            rows: {},
+            districtList: [],
+            currentIndex:0,
+            btnList:[{
+                title:'入库',
+                id:0
+            },{
+                title:'出库',
+                id:1
+            },{
+                title:'返修结果',
+                id:2
+            }]
+        },
+        created() {
+            axios({
+                method: "get",
+                url: "/app/check/getWorkshopData"
+            }).then(res => {
+
+            })
+        },
+        mounted() {
+            window.parent.app.dialogHeight = document.documentElement.offsetHeight + "px";
+            this.row = window.parent.app.dialogRow;
+            this.rows = window.parent.app.dialogRows;
+
+        },
+        methods: {
+            changeIndex(index){
+                console.log(index)
+            },
+            close() {
+                window.parent.app.dialogClose();
+            },
+            update(item) {
+                let data = JSON.parse(item)
+                let {staff_qty, moth_date} = data
+                let workshop = data.productionLine
+                let workshop_id = data.id
+                let principal = data.leader_name
+                axios({
+                    method: 'POST',
+                    url: '/app/check/saveStaffQty',
+                    params: {
+                        staff_qty,
+                        moth_date,
+                        workshop,
+                        workshop_id,
+                        principal
+                    }
+                }).then(res => {
+                })
+                return true
+            },
+            submit() {
+                let count = 0
+                let _this = this
+                let [...list] = this.districtList
+                list.forEach(item => {
+                    let result = this.update(JSON.stringify(item))
+                    if (result) {
+                        count++
+                    }
+                    if (count == list.length) {
+
+                        window.parent.app.dialogClose();
+                        window.parent.app.$message({
+                            message: '数据提交成功',
+                            type: 'success'
+                        })
+                    }
+                })
+
+
+            }
+        }
+    })
+</script>
+</body>
+</html>

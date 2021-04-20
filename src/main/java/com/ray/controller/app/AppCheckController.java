@@ -30,8 +30,13 @@ import com.ray.util.SerialNumberUtil;
 public class AppCheckController extends Controller {
 	public void getCheckList() {
 		String auditor_userid = getPara("userid");
-		List<RationalProposal> toBeChecked = RationalProposal.dao.find(
-				"select * from rational_proposal WHERE is_checked = 0 and auditor_userid ='" + auditor_userid + "'");
+		String sql = "SELECT * FROM rational_proposal WHERE is_checked = 0  AND \r\n" + 
+				"((workshop IN (SELECT productionLine FROM rp_line_structure WHERE id >= 11 AND id<61  AND leader_id = '"+auditor_userid+"' ))\r\n" + 
+				"  OR (auditor_userid='"+auditor_userid+"'))";
+		
+//		String s2 = "select * from rational_proposal WHERE is_checked = 0 and auditor_userid ='" + auditor_userid + "'";
+		List<RationalProposal> toBeChecked = RationalProposal.dao.find(sql);
+		
 		Record resp = new Record();
 		resp.set("arraytoBeChecked", toBeChecked);
 //		System.out.println(toBeChecked);

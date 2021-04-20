@@ -260,6 +260,7 @@ Table: rp_line_structure
  pid            | INT(10)      | YES  |     |         | 上级id    
  leader_name    | VARCHAR(20)  | YES  |     |         | 负责人姓名   
  leader_id      | VARCHAR(20)  | YES  |     |         | 负责人工号   
+ phone_number   | VARCHAR(16)  | YES  |     |         | 手机号     
 ----------------+--------------+------+-----+---------+---------
 
 Table: rp_prize_exchange_list
